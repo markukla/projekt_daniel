@@ -4,6 +4,8 @@ import postModel from "../Models/post"; // postModel is imported from post and i
 import Controller from 'interfaces/controller.interface';
 import {NextFunction} from "express";
 import PostNotFoundException from "../Exceptions/PostNotFoundException";
+import validationMiddleware from "../middleware/validation.middleware";
+import CreatePostDto from "../Models/post.dto";
 
 
 class PostsController implements Controller{
@@ -17,9 +19,10 @@ class PostsController implements Controller{
     private initializeRoutes() {
         this.router.get(this.path, this.getAllPosts);
         this.router.get(`${this.path}/:id`, this.getPostById);
-        this.router.patch(`${this.path}/:id`, this.modifyPost);
+        this.router.patch(`${this.path}/:id`,validationMiddleware(CreatePostDto, true), this.modifyPost);
         this.router.delete(`${this.path}/:id`, this.deletePost);
-        this.router.post(this.path, this.createPost);
+        // validationMiddleware is attached only to this route
+        this.router.post(this.path,validationMiddleware(CreatePostDto), this.createPost);
     }
 
     private getAllPosts = (request: express.Request, response: express.Response) => {
@@ -29,9 +32,10 @@ class PostsController implements Controller{
             });
     }
 
-    private getPostById = (request: express.Request, response: express.Response, next:NextFunction) => {
+    private getPostById =  async (request: express.Request, response: express.Response, next:NextFunction) => {
         const id = request.params.id;
-        this.post.findById(id)
+        // async and await is required to error handling with try catch. Without it it does not work properly
+        try{  await this.post.findById(id)
             .then((post) => {
                 if(post){
                     response.send(post);
@@ -45,13 +49,28 @@ class PostsController implements Controller{
 
 
 
-            });
+            });}catch (e) {
+            e.type;
+            e.message;
+            console.log('error Message');
+            console.log(e);
+            response.send({
+                status:500,
+                message:'Argument :id passed in must be a single String of 12 bytes or a string of 24 hex characters'
+
+            })
+
+
+
+        }
+
     }
 
-    private modifyPost = (request: express.Request, response: express.Response, next:NextFunction) => {
+    private modifyPost = async (request: express.Request, response: express.Response, next:NextFunction) => {
         const id = request.params.id;
         const postData: Post = request.body;
-        this.post.findByIdAndUpdate(id, postData, { new: true })
+        try{
+        await this.post.findByIdAndUpdate(id, postData, { new: true })
             .then((post) => {
                 if(post){
                     response.send(post);
@@ -60,6 +79,12 @@ class PostsController implements Controller{
                     next(new PostNotFoundException(id));
                 }
             });
+        }catch (e) {
+            response.send({
+                error:`${e.message}`
+            })
+
+        }
     }
 
     private createPost = (request: express.Request, response: express.Response) => {
@@ -72,9 +97,9 @@ class PostsController implements Controller{
             });
     }
 
-    private deletePost = (request: express.Request, response: express.Response, next:NextFunction) => {
+    private deletePost =  (request: express.Request, response: express.Response, next:NextFunction) => {
         const id = request.params.id;
-        this.post.findByIdAndDelete(id)
+         this.post.findByIdAndDelete(id)
             .then((successResponse) => {
                 if (successResponse) {
                     response.send(200);

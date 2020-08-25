@@ -3,6 +3,8 @@ import * as bodyParser from 'body-parser';
 import * as mongose from 'mongoose';
 import Controller from "./interfaces/controller.interface";
 import errorMiddleware from "./middleware/error.middleware";
+import 'reflect-metadata';
+import 'es6-shim';
 
 class App {
     public app: express.Application;
