@@ -1,10 +1,26 @@
 import App from './app';
 import PostsController from "./Controllers/postController";
+import 'dotenv/config';
+import 'reflect-metadata';
+import config from "../ormconfig";
+import {createConnection} from 'typeorm';
+import validateEnv from "../utils/vaildateEnv";
+validateEnv();
 
 
-const app = new App([ new PostsController()],
+validateEnv();
 
-    5000,
-);
-
-app.listen();
+(async () => {
+    try {
+        await createConnection(config);
+    } catch (error) {
+        console.log('Error while connecting to the database', error);
+        return error;
+    }
+    const app = new App(
+        [
+            new PostsController(),
+        ],
+    );
+    app.listen();
+})();
