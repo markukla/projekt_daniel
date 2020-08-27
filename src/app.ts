@@ -11,8 +11,9 @@ class App {
     public app: express.Application;
     public port: number;
 
-    constructor(controllers:Controller[]) {
+    constructor(controllers:Controller<any>[]) {
         this.app = express();
+        this.app.set('port',5000);
 
 
         this.initializeMiddlewares();
@@ -31,7 +32,7 @@ class App {
 
     }
 
-    private initializeControllers(controllers) {
+    private initializeControllers(controllers:Controller<any>[]) {
         controllers.forEach(controller=>{
             this.app.use('/', controller.router);
         })
@@ -44,8 +45,8 @@ class App {
     }
 
     public listen() {
-        this.app.listen(this.port, () => {
-            console.log(`App listening on the port ${this.port}`);
+        this.app.listen(process.env.PORT, () => {
+            console.log(`App listening on the port ${process.env.PORT}`);
         });
     }
 }
