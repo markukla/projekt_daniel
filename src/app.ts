@@ -13,7 +13,7 @@ class App {
 
     constructor(controllers:Controller<any>[]) {
         this.app = express();
-        this.app.set('port',5000);
+       
 
 
         this.initializeMiddlewares();

@@ -3,9 +3,9 @@ import * as express from 'express';
 import Controller from 'interfaces/controller.interface';
 
 import validationMiddleware from "../middleware/validation.middleware";
-import CreatePostDto from "../Models/post.dto";
+import CreatePostDto from "../Models/Post/post.dto";
 import PostService from "../RepositoryServices/post.service";
-import Post from "../Models/post.entity";
+import Post from "../Models/Post/post.entity";
 
 
 class PostsController implements Controller<Post>{

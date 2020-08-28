@@ -5,6 +5,8 @@ import 'reflect-metadata';
 import config from "../ormconfig";
 import {createConnection} from 'typeorm';
 import validateEnv from "../utils/vaildateEnv";
+import UserController from "./Controllers/userController";
+import RoleController from "./Controllers/roleController";
 validateEnv();
 
 
@@ -19,7 +21,7 @@ validateEnv();
     }
     const app = new App(
         [
-            new PostsController(),
+            new PostsController(),new UserController(),new RoleController()
         ],
     );
     app.listen();

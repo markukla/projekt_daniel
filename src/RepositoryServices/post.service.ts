@@ -1,12 +1,14 @@
 import * as express from 'express';
 import {getRepository, Repository} from "typeorm";
-import Post from "../Models/post.entity";
-import CreatePostDto from "../Models/post.dto";
+import Post from "../Models/Post/post.entity";
+import CreatePostDto from "../Models/Post/post.dto";
 import PostNotFoundException from "../Exceptions/PostNotFoundException";
-import Service from "../interfaces/service.interface";
+import RepositoryService from "../interfaces/service.interface";
 
-class PostService implements Service<Post>{
+class PostService implements RepositoryService<Post>{
     public repository:Repository<Post>=getRepository(Post);
+
+
 
     public createPost = async (request: express.Request, response: express.Response) => {
         const postData: CreatePostDto = request.body;
@@ -33,19 +35,32 @@ class PostService implements Service<Post>{
     public modifyPost = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const id = request.params.id;
         const postData: Post = request.body;
+        try {
         await this.repository.update(id, postData);
-        const updatedPost = await this.repository.findOne(id);
-        if (updatedPost) {
-            response.send(updatedPost);
-        } else {
-            next(new PostNotFoundException(id));
+
+            const updatedPost = await this.repository.findOne(id);
+            if (updatedPost) {
+                response.send(updatedPost);
+            } else {
+                next(new PostNotFoundException(id));
+            }
+        }catch (e) {
+           var erroType=e.type;
+           var erroMessage=e.message;
+            response.send({
+
+                "errorType":`${erroType}`,
+                "errorMessage":`${erroMessage}`
+            })
+
         }
     }
 
     public deletePost = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const id = request.params.id;
         const deleteResponse = await this.repository.delete(id);
-        if (deleteResponse.raw[1]) {
+        console.log(deleteResponse);
+        if (deleteResponse.affected===1) {
             response.sendStatus(200);
         } else {
             next(new PostNotFoundException(id));

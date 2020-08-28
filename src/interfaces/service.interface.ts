@@ -1,7 +1,7 @@
 import {getRepository, Repository} from "typeorm";
 
-interface Service<T> {
+interface RepositoryService<T> {
     repository:Repository<T>;
 
 }
-export default Service;
+export default RepositoryService;

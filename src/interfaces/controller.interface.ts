@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import Service from "./service.interface";
+import RepositoryService from "./service.interface";
 interface Controller<T> {
     path: string;
     router: Router;
-    service:Service<T>;
+    service:RepositoryService<T>;
 
 }
 
