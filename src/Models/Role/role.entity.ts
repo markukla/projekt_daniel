@@ -1,16 +1,16 @@
-import {BaseEntity, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, ManyToMany, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
+import User from "../User/user.entity";
 
 @Entity("roles")
-class Role extends BaseEntity {
+class Role  {
 
 
 
-    @PrimaryColumn()
 
+@PrimaryColumn()
     rolename: string;
 
-    @Column()
-    roleDescription: string;
+
 
 }
     export default Role;

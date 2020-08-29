@@ -1,27 +1,25 @@
-import {BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
 import Role from "../Role/role.entity";
 
 @Entity("users")
-class User extends BaseEntity{
+class User {
 
     @PrimaryGeneratedColumn()
-    public id?: number;
+    public userid?: number;
 
     @Column()
-    name: string;
-
-    @Column()
-    lastname:string;
+    fulName: string;
 
     @Column()
     email: string;
     @Column()
     password: string;
     @Column()
-    isactive: boolean;
+    active: boolean;
 
 @ManyToMany(()=>Role)  //here we reference to entity name, not table name
     @JoinTable()
+
     roles: Role[];
 
 

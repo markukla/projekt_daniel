@@ -39,9 +39,11 @@ class UserService implements RepositoryService<User>{
         const id = request.params.id;
         const userData: User = request.body;
         try {
-            await this.repository.update(id, userData);
+// i use save for updating, becasue update method does not work with object related to other object with many to many relation, in this case users-and roles
+            userData.userid=Number(id);
+            await this.repository.save( userData);
 
-            const updatedUser = await this.repository.findOne(id);
+            const updatedUser = await this.repository.findOne(id,{relations:['roles']});
             if (updatedUser) {
                 response.send(updatedUser);
             } else {
@@ -50,6 +52,7 @@ class UserService implements RepositoryService<User>{
         }catch (e) {
             var erroType=e.type;
             var erroMessage=e.message;
+            console.log(e.trace);
             response.send({
 
                 "errorType":`${erroType}`,

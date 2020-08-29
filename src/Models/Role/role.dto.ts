@@ -8,8 +8,7 @@ class CreateRoleDto {
     @IsString()
     rolename: string;
 
-    @IsString()
-    roleDescription: string;
+
 
 }
 export default CreateRoleDto;

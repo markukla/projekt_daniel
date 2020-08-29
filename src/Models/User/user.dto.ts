@@ -1,17 +1,16 @@
 import {Column} from "typeorm";
 
 
-import {IsArray, IsBoolean, IsEmail, IsString} from "class-validator";
+import {IsArray, IsBoolean, IsEmail, IsNumber, IsString} from "class-validator";
 import Role from "../Role/role.entity";
-import {classToClass} from "class-transformer";
+
 
 
 class CreateUserDto {
-   @IsString()
-    name: string;
 
-    @IsString()
-    lastname:string;
+
+   @IsString()
+    fulName: string;
 
    @IsEmail()
     email: string;
@@ -19,7 +18,7 @@ class CreateUserDto {
    @IsString()
    password:string;
     @IsBoolean()
-    isactive: boolean;
+    active: boolean;
 
    @IsArray()
     roles: Role[];

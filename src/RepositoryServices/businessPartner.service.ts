@@ -1,37 +1,35 @@
 import * as express from 'express';
 import {getRepository, Repository} from "typeorm";
-import Post from "../Models/Post/post.entity";
-import CreatePostDto from "../Models/Post/post.dto";
+
 import PostNotFoundException from "../Exceptions/PostNotFoundException";
 import RepositoryService from "../interfaces/service.interface";
-import User from "../Models/User/user.entity";
-import CreateUserDto from "../Models/User/user.dto";
-import Role from "../Models/Role/role.entity";
-import CreateRoleDto from "../Models/Role/role.dto";
 
-class RoleService implements RepositoryService<Role>{
-    public repository:Repository<Role>=getRepository(Role);
+import BusinesPartner from "../Models/BusinessPartner/businesPartner.entity";
+import CreateBusinessPartnerDto from "../Models/BusinessPartner/businessPartner.dto";
+
+class BusinessPartnerService implements RepositoryService<BusinesPartner>{
+    public repository:Repository<BusinesPartner>=getRepository(BusinesPartner);
 
 
 
     public createNewRecord = async (request: express.Request, response: express.Response) => {
-        const roleData: CreateRoleDto = request.body;
-        console.log(roleData);
-        const newRole = this.repository.create(roleData);
-        await this.repository.save(newRole);
-        response.send(newRole);
+        const businessPartnerData: CreateBusinessPartnerDto = request.body;
+        const newBusinessPartner = this.repository.create(businessPartnerData);
+        await this.repository.save(newBusinessPartner);
+        response.send(newBusinessPartner);
     }
 
     public getAllRecords = async (request: express.Request, response: express.Response) => {
-        const roles = await this.repository.find();
-        response.send(roles);
+        // in relation option: it takes table name as paramter, not enity name
+        const records = await this.repository.find({relations:['roles']});
+        response.send(records);
     }
 
     public findOneRecord = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const id = request.params.id;
-        const role = await this.repository.findOne(id);
-        if (role) {
-            response.send(role);
+        const businesPartner = await this.repository.findOne(id,{relations:['roles']});
+        if (businesPartner) {
+            response.send(businesPartner);
         } else {
             next(new PostNotFoundException(id));
         }
@@ -39,14 +37,15 @@ class RoleService implements RepositoryService<Role>{
 
     public modifyRecord = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const id = request.params.id;
-        const roleData: Role = request.body;
+        const businessPartnerData: BusinesPartner = request.body;
         try {
+            // id must be set
+            businessPartnerData.business_partner_id=Number(id);
+            await this.repository.save( businessPartnerData);
 
-            await this.repository.save(roleData);
-
-            const updatedRole = await this.repository.findOne(id);
-            if (updatedRole) {
-                response.send(updatedRole);
+            const updatedBusinessPartner = await this.repository.findOne(id);
+            if (updatedBusinessPartner) {
+                response.send(updatedBusinessPartner);
             } else {
                 next(new PostNotFoundException(id));
             }
@@ -74,6 +73,6 @@ class RoleService implements RepositoryService<Role>{
     }
 }
 
-export default RoleService;
+export default BusinessPartnerService;
 
 
