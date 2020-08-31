@@ -9,6 +9,10 @@ import Post from "../Models/Post/post.entity";
 import UserService from "../RepositoryServices/user.service";
 import User from "../Models/User/user.entity";
 import CreateUserDto from "../Models/User/user.dto";
+import WrongCredentialsException from "../Exceptions/WrongCredentialsException";
+import LogInDto from "../authentication/logIn.dto";
+import TokenData from "../interfaces/tokenData.interface";
+import authMiddleware from "../middleware/auth.middleware";
 
 
 class UserController implements Controller<User>{
@@ -20,13 +24,30 @@ class UserController implements Controller<User>{
     }
 
     private initializeRoutes() {
-        this.router.get(this.path, this.service.getAllRecords);
-        this.router.get(`${this.path}/:id`, this.service.findOneRecord);
-        this.router.patch(`${this.path}/:id`, validationMiddleware(CreateUserDto, true), this.service.modifyRecord);
-        this.router.delete(`${this.path}/:id`, this.service.deleteRecord);
+        this.router.get(this.path, authMiddleware,this.service.getAllRecords);
+        this.router.get(`${this.path}/:id`,authMiddleware, this.service.findOneRecord);
+        this.router.patch(`${this.path}/:id`,authMiddleware, validationMiddleware(CreateUserDto, true), this.service.modifyRecord);
+        this.router.delete(`${this.path}/:id`,authMiddleware, this.service.deleteRecord);
         // validationMiddleware is attached only to this route
-        this.router.post(this.path,validationMiddleware(CreateUserDto), this.service.createNewRecord);
+        this.router.post(this.path,validationMiddleware(CreateUserDto), this.registration);
     }
+
+    private registration = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        const userData: CreateUserDto = request.body;
+        try {
+            const {
+                cookie,
+                user,
+            } = await this.service.register(userData);
+            response.setHeader('Set-Cookie', [cookie]);
+            response.send(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
+
 
 
 }
