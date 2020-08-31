@@ -6,18 +6,19 @@ import WrongAuthenticationTokenException from '../exceptions/WrongAuthentication
 import DataStoredInToken from '../interfaces/dataStoredInToken';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
 import User from "../Models/User/user.entity";
+import UserService from "../RepositoryServices/user.service";
 
 
 async function authMiddleware(request: RequestWithUser, response: Response, next: NextFunction) {
   const cookies = request.cookies;
   console.log(cookies.Authorization);
-  const userRepository = getRepository(User);
+  const userRepository=getRepository(User);
   if (cookies && cookies.Authorization) {
     const secret = process.env.JWT_SECRET;
     try {
       const verificationResponse = jwt.verify(cookies.Authorization, secret) as DataStoredInToken;
       const id = verificationResponse.id;
-      const user = await userRepository.findOne(id,{relations: ['roles']});
+      const user = await userRepository.findOne(id,{relations: ['roles']})
       if (user) {
         request.user = user;
         next();

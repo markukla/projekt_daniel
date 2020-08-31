@@ -13,7 +13,7 @@ class AuthenticationService {
 
   public async register(userData: CreateUserDto) {
     if (
-      await this.userRepository.findOne({ email: userData.email })
+      await this.userRepository.findOne({ email: userData.email },{relations:"users"})
     ) {
       throw new UserWithThatEmailAlreadyExistsException(userData.email);
     }

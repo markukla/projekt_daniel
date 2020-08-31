@@ -13,6 +13,7 @@ import WrongCredentialsException from "../Exceptions/WrongCredentialsException";
 import LogInDto from "../authentication/logIn.dto";
 import TokenData from "../interfaces/tokenData.interface";
 import authMiddleware from "../middleware/auth.middleware";
+import adminAuthorizationMiddleware from "../middleware/adminAuthorization.middleware";
 
 
 class UserController implements Controller<User>{
@@ -24,10 +25,10 @@ class UserController implements Controller<User>{
     }
 
     private initializeRoutes() {
-        this.router.get(this.path, authMiddleware,this.service.getAllRecords);
-        this.router.get(`${this.path}/:id`,authMiddleware, this.service.findOneRecord);
-        this.router.patch(`${this.path}/:id`,authMiddleware, validationMiddleware(CreateUserDto, true), this.service.modifyRecord);
-        this.router.delete(`${this.path}/:id`,authMiddleware, this.service.deleteRecord);
+        this.router.get(this.path, authMiddleware,adminAuthorizationMiddleware,this.service.getAllRecords);
+        this.router.get(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.service.findOneRecord);
+        this.router.patch(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(CreateUserDto, true), this.service.modifyRecord);
+        this.router.delete(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.service.deleteRecord);
         // validationMiddleware is attached only to this route
         this.router.post(this.path,validationMiddleware(CreateUserDto), this.registration);
     }

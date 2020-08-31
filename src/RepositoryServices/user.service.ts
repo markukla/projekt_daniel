@@ -30,8 +30,9 @@ class UserService implements RepositoryService<User> {
         response.send(records);
     }
 
-    public findOneRecord = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    public findOneRecord = async (request: express.Request, response: express.Response, next: express.NextFunction):Promise<User> => {
         const id = request.params.id;
+        return
         const user = await this.repository.findOne(id, {relations: ['roles']});
         if (user) {
             response.send(user);
@@ -80,7 +81,10 @@ class UserService implements RepositoryService<User> {
 
     public async register(userData: CreateUserDto) {
         if (
-            await this.repository.findOne({email: userData.email})
+            await this.repository.findOne(
+        {email: userData.email},
+                {relations: ['roles']}
+            )
         ) {
             throw new UserWithThatEmailAlreadyExistsException(userData.email);
         }
@@ -100,7 +104,7 @@ class UserService implements RepositoryService<User> {
     }
 
     public async login(logInData: LogInDto) {
-        const user = await this.repository.findOne({email: logInData.email});
+        const user = await this.repository.findOne({email: logInData.email},{relations: ['roles']});
         if (user) {
             const isPasswordMatching = await bcrypt.compare(logInData.password, user.password);
             if (isPasswordMatching) {
