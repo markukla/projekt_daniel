@@ -2,7 +2,7 @@ import User from "../User/user.entity";
 import {Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
 import Role from "../Role/role.entity";
 @Entity("business_partners")
- class BusinesPartner extends User{
+ class BusinesPartner {
     @PrimaryGeneratedColumn()
     public business_partner_id?: number;
 

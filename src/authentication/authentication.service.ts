@@ -27,14 +27,15 @@ class AuthenticationService {
         user.password = undefined;
         const tokenData: TokenData = this.createToken(user);
         loggedUser = new LoggedUser(user, tokenData);
-      } else if (businesPartner) {
-        const isPasswordMatching = await bcrypt.compare(logInData.password, businesPartner.password);
-        if (isPasswordMatching) {
-
-          businesPartner.password = undefined;
-          const tokenData: TokenData = this.createToken(businesPartner);
-          loggedUser = new LoggedUser(businesPartner, tokenData);
+      }
         }
+    else if (businesPartner) {
+      const isPasswordMatching = await bcrypt.compare(logInData.password, businesPartner.password);
+      if (isPasswordMatching) {
+
+        businesPartner.password = undefined;
+        const tokenData: TokenData = this.createToken(businesPartner);
+        loggedUser = new LoggedUser(businesPartner, tokenData);
       } else {
 
         new UserWithThisEmailDoesNotExistException(logInData.email);
