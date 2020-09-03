@@ -27,7 +27,7 @@ class UserController implements Controller<User>{
         this.router.get(this.path, authMiddleware,adminAuthorizationMiddleware,this.getAllUsers);
         this.router.get(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.getOneUserById);
         this.router.patch(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(CreateUserDto, true), this.modyfyUser);
-        this.router.patch(`${this.path}/:id/changepassword`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(ChangePasswordDto, true), this.changePassword);
+        this.router.patch(`${this.path}/:id/changepassword`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(ChangePasswordDto, true), this.changePasswordByAdmin);
         this.router.delete(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.deleteOneUserById);
         this.router.post(this.path,validationMiddleware(CreateUserDto), this.registration);
     }
@@ -114,7 +114,7 @@ const id:string=request.params.id;
 
     }
 
-    private changePassword = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    private changePasswordByAdmin = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
         const id:string=request.params.id;
         try{
             const user=await this.service.findOneRecord(id);

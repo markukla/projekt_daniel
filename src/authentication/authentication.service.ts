@@ -5,56 +5,59 @@ import UserWithThatEmailAlreadyExistsException from '../exceptions/UserWithThatE
 import DataStoredInToken from '../interfaces/dataStoredInToken';
 import TokenData from '../interfaces/tokenData.interface';
 import User from "../Models/User/user.entity";
-import CreateUserDto from "../Models/User/user.dto";
 import LogInDto from "./logIn.dto";
 import ChangePasswordDto from "./changePassword.dto";
 import IncorrectPaswordException from "../Exceptions/IncorrectPaswordException";
-import UserNotFoundException from "../Exceptions/UserNotFoundException";
 import UserWithThisEmailDoesNotExistException from "../Exceptions/UserWithThisEmailDoesNotExistException";
 import LoggedUser from "./loggedUser";
+import BusinesPartner from "../Models/BusinessPartner/businesPartner.entity";
 
 
 class AuthenticationService {
   private manager = getManager();
 
   public async login(logInData: LogInDto):Promise<LoggedUser> {
-    var loggedUser: LoggedUser=null;
+    var loggedUser: LoggedUser = null;
     const user: User = await this.manager.findOne(User, {email: logInData.email}, {relations: ['roles']});
+    const businesPartner: BusinesPartner = await this.manager.findOne(BusinesPartner, {email: logInData.email}, {relations: ['roles']})
     if (user) {
       const isPasswordMatching = await bcrypt.compare(logInData.password, user.password);
       if (isPasswordMatching) {
 
         user.password = undefined;
         const tokenData: TokenData = this.createToken(user);
-        loggedUser= new LoggedUser(user, tokenData);
+        loggedUser = new LoggedUser(user, tokenData);
+      } else if (businesPartner) {
+        const isPasswordMatching = await bcrypt.compare(logInData.password, businesPartner.password);
+        if (isPasswordMatching) {
 
+          businesPartner.password = undefined;
+          const tokenData: TokenData = this.createToken(businesPartner);
+          loggedUser = new LoggedUser(businesPartner, tokenData);
+        }
+      } else {
 
-
+        new UserWithThisEmailDoesNotExistException(logInData.email);
 
 
       }
-    } else {
-
-      new UserWithThisEmailDoesNotExistException(logInData.email);
-
+      return loggedUser;
 
     }
-    return loggedUser;
-
   }
-
 
 
   public createCookie(tokenData: TokenData) {
     return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
   }
 
-  public createToken(user: User): TokenData {
+  public createToken(user: User|BusinesPartner): TokenData {
     const expiresIn = 60 * 60; // an hour
     const secret = process.env.JWT_SECRET;
 
     const dataStoredInToken: DataStoredInToken = {
-      id: String(user.userid),
+
+      email:user.email
     };
     return {
       expiresIn,

@@ -1,40 +1,19 @@
-import * as express from 'express';
+
 import {getManager, getRepository, Repository} from "typeorm";
-import Post from "../Models/Post/post.entity";
-import CreatePostDto from "../Models/Post/post.dto";
-import PostNotFoundException from "../Exceptions/PostNotFoundException";
 import RepositoryService from "../interfaces/service.interface";
 import User from "../Models/User/user.entity";
 import CreateUserDto from "../Models/User/user.dto";
 import UserWithThatEmailAlreadyExistsException from "../Exceptions/UserWithThatEmailAlreadyExistsException";
-import TokenData from "../interfaces/tokenData.interface";
-import DataStoredInToken from "../interfaces/dataStoredInToken";
-import * as jwt from "jsonwebtoken";
+
 import * as bcrypt from "bcrypt";
-import LogInDto from "../authentication/logIn.dto";
-import WrongCredentialsException from "../Exceptions/WrongCredentialsException";
+
 import ChangePasswordDto from "../authentication/changePassword.dto";
-import IncorrectPaswordException from "../Exceptions/IncorrectPaswordException";
+
 class UserService implements RepositoryService{
 
     public manager=getManager();
 
 
-    public createNewRecord = async (userData:CreateUserDto):Promise<User> => {
-       try{
-        const newUser=await this.manager.create(User,userData);
-        await this.manager.save(User,newUser);
-        return newUser;
-       }
-       catch (e) {
-           return e;
-           console.log(`${e.type}`);
-           console.log(`${e.message}`);
-
-
-
-       }
-    }
     public async register(userData: CreateUserDto):Promise<User> {
         if (
             await this.manager.findOne(User,

@@ -8,6 +8,7 @@ import validateEnv from "../utils/vaildateEnv";
 import UserController from "./Controllers/userController";
 import RoleController from "./Controllers/roleController";
 import AuthenticationController from "./authentication/authentication.controller";
+import BusinessPartnerController from "./Controllers/businessPartnerController";
 validateEnv();
 
 
@@ -22,8 +23,11 @@ validateEnv();
     }
     const app = new App(
         [
+            new RoleController(),
             new AuthenticationController(),
-            new PostsController(),new UserController(),new RoleController()
+            new PostsController(),
+            new UserController(),
+            new BusinessPartnerController()
         ],
     );
     app.listen();
