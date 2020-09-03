@@ -12,6 +12,7 @@ import authMiddleware from "../middleware/auth.middleware";
 import adminAuthorizationMiddleware from "../middleware/adminAuthorization.middleware";
 import UserService from "../RepositoryServices/userRepositoryService";
 import UserNotFoundException from "../Exceptions/UserNotFoundException";
+import ChangePasswordDto from "../authentication/changePassword.dto";
 
 
 class UserController implements Controller<User>{
@@ -26,19 +27,16 @@ class UserController implements Controller<User>{
         this.router.get(this.path, authMiddleware,adminAuthorizationMiddleware,this.getAllUsers);
         this.router.get(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.getOneUserById);
         this.router.patch(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(CreateUserDto, true), this.modyfyUser);
+        this.router.patch(`${this.path}/:id/changepassword`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(ChangePasswordDto, true), this.changePassword);
         this.router.delete(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.deleteOneUserById);
-        // validationMiddleware is attached only to this route
         this.router.post(this.path,validationMiddleware(CreateUserDto), this.registration);
     }
 
     private registration = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const userData: CreateUserDto = request.body;
         try {
-            const {
-                cookie,
-                user,
-            } = await this.service.register(userData);
-            response.setHeader('Set-Cookie', [cookie]);
+            const user = await this.service.register(userData);
+
             response.send(user);
         } catch (error) {
             next(error);
@@ -58,14 +56,11 @@ else {next(new UserNotFoundException(String(id)));
 }
         }
         catch (error) {
-            response.send({
-                errorName:`${error.name}`,
-                erorMessage:`${error.message}`
-
-            })
+            next(error);
+            }
 
         }
-}
+
 private getAllUsers = async (request: express.Request, response: express.Response, next: express.NextFunction)=>
 {
 try{
@@ -75,17 +70,14 @@ try{
 
 }
 catch (error) {
-    response.send({
-        errorName:`${error.name}`,
-        erorMessage:`${error.message}`
-
-    })
-
+    next(error);
 }
+
+
 }
 
 private getOneUserById = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
-const id:number=Number(request.params.id);
+const id:string=request.params.id;
         try{
     const foundUser=await this.service.findOneRecord(id);
     if(foundUser){
@@ -96,13 +88,10 @@ const id:number=Number(request.params.id);
     }
 }
         catch (error) {
-            response.send({
-                errorName:`${error.name}`,
-                erorMessage:`${error.message}`
-
-            })
-
+            next(error);
         }
+
+
 
 }
     private deleteOneUserById = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
@@ -120,15 +109,34 @@ const id:number=Number(request.params.id);
             }
         }
         catch (error) {
-            response.send({
-                errorName:`${error.name}`,
-                erorMessage:`${error.message}`
-
-            })
-
+            next(error);
         }
 
     }
+
+    private changePassword = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
+        const id:string=request.params.id;
+        try{
+            const user=await this.service.findOneRecord(id);
+            if(user){
+                const passwordData:ChangePasswordDto=request.body;
+                this.service.changeUserPasswordByAdmin(user,passwordData);
+                response.send({status:200,
+                message:"password has been successfully updated"})
+
+            }
+            else {
+                next(new UserNotFoundException(String(id))) ;
+            }
+        }
+        catch (error) {
+            next(error);
+        }
+
+
+
+    }
+
 
 
 }

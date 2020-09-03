@@ -1,12 +1,13 @@
 import * as express from 'express';
-import {getRepository, Repository} from "typeorm";
+import {getManager, getRepository, Repository} from "typeorm";
 import Post from "../Models/Post/post.entity";
 import CreatePostDto from "../Models/Post/post.dto";
 import PostNotFoundException from "../Exceptions/PostNotFoundException";
 import RepositoryService from "../interfaces/service.interface";
 
-class PostService implements RepositoryService<Post>{
+class PostService implements RepositoryService{
     public repository:Repository<Post>=getRepository(Post);
+    public manager=getManager();
 
 
 

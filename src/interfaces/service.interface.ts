@@ -1,7 +1,9 @@
-import {getRepository, Repository} from "typeorm";
+import {EntityManager, getRepository, Repository} from "typeorm";
 
-interface RepositoryService<T> {
-    repository:Repository<T>;
+interface RepositoryService {
+
+    manager:EntityManager;
+
 
 }
 export default RepositoryService;

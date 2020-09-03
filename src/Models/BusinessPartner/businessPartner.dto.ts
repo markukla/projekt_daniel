@@ -1,9 +1,9 @@
 import CreateUserDto from "../User/user.dto";
 import {IsArray, IsBoolean, IsEmail, IsString} from "class-validator";
-import {Column} from "typeorm";
+
 import Role from "../Role/role.entity";
 
-class CreateBusinessPartnerDto {
+class CreateBusinessPartnerDto extends CreateUserDto{
     @IsString()
     fulName: string;
 

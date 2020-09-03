@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {getRepository, Repository} from "typeorm";
+import {getManager, getRepository, Repository} from "typeorm";
 
 import PostNotFoundException from "../Exceptions/PostNotFoundException";
 import RepositoryService from "../interfaces/service.interface";
@@ -7,8 +7,10 @@ import RepositoryService from "../interfaces/service.interface";
 import BusinesPartner from "../Models/BusinessPartner/businesPartner.entity";
 import CreateBusinessPartnerDto from "../Models/BusinessPartner/businessPartner.dto";
 
-class BusinessPartnerService implements RepositoryService<BusinesPartner>{
-    public repository:Repository<BusinesPartner>=getRepository(BusinesPartner);
+class BusinessPartnerService implements RepositoryService{
+
+    public manager=getManager();
+    public repository=getRepository(BusinesPartner);
 
 
 

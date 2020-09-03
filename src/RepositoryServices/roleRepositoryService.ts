@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {getRepository, Repository} from "typeorm";
+import {getManager, getRepository, Repository} from "typeorm";
 import Post from "../Models/Post/post.entity";
 import CreatePostDto from "../Models/Post/post.dto";
 import PostNotFoundException from "../Exceptions/PostNotFoundException";
@@ -9,8 +9,9 @@ import CreateUserDto from "../Models/User/user.dto";
 import Role from "../Models/Role/role.entity";
 import CreateRoleDto from "../Models/Role/role.dto";
 
-class RoleService implements RepositoryService<Role>{
+class RoleService implements RepositoryService{
     public repository:Repository<Role>=getRepository(Role);
+    public manager=getManager();
 
 
 

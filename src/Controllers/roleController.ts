@@ -3,15 +3,11 @@ import * as express from 'express';
 import Controller from 'interfaces/controller.interface';
 
 import validationMiddleware from "../middleware/validation.middleware";
-import CreatePostDto from "../Models/Post/post.dto";
-import PostService from "../RepositoryServices/post.service";
-import Post from "../Models/Post/post.entity";
-import UserService from "../RepositoryServices/user.service";
-import User from "../Models/User/user.entity";
-import CreateUserDto from "../Models/User/user.dto";
-import RoleService from "../RepositoryServices/role.service";
+
+
 import Role from "../Models/Role/role.entity";
 import CreateRoleDto from "../Models/Role/role.dto";
+import RoleService from "../RepositoryServices/roleRepositoryService";
 
 
 class RoleController implements Controller<Role>{

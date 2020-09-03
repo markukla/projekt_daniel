@@ -4,8 +4,9 @@ import Controller from 'interfaces/controller.interface';
 
 import validationMiddleware from "../middleware/validation.middleware";
 import CreatePostDto from "../Models/Post/post.dto";
-import PostService from "../RepositoryServices/post.service";
+
 import Post from "../Models/Post/post.entity";
+import PostService from "../RepositoryServices/postRepositoryService";
 
 
 class PostsController implements Controller<Post>{

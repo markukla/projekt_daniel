@@ -6,7 +6,7 @@ import WrongAuthenticationTokenException from '../exceptions/WrongAuthentication
 import DataStoredInToken from '../interfaces/dataStoredInToken';
 import RequestWithUser from '../interfaces/requestWithUser.interface';
 import User from "../Models/User/user.entity";
-import UserService from "../RepositoryServices/user.service";
+
 
 
 async function authMiddleware(request: RequestWithUser, response: Response, next: NextFunction) {

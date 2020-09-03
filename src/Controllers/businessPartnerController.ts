@@ -3,14 +3,10 @@ import * as express from 'express';
 import Controller from 'interfaces/controller.interface';
 
 import validationMiddleware from "../middleware/validation.middleware";
-import CreatePostDto from "../Models/Post/post.dto";
-import PostService from "../RepositoryServices/post.service";
-import Post from "../Models/Post/post.entity";
-import UserService from "../RepositoryServices/user.service";
-import User from "../Models/User/user.entity";
+i
 import CreateUserDto from "../Models/User/user.dto";
 import BusinesPartner from "../Models/BusinessPartner/businesPartner.entity";
-import RepositoryService from "../interfaces/service.interface";
+
 import BusinessPartnerService from "../RepositoryServices/businessPartner.service";
 
 
