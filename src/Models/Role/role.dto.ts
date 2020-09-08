@@ -1,14 +1,15 @@
 import {Column} from "typeorm";
 
 
-import {IsString} from "class-validator";
+import {IsEnum, IsString} from "class-validator";
+import RoleEnum from "./role.enum";
 
 
 class CreateRoleDto {
-    @IsString()
-    rolename: string;
-
+    @IsEnum(RoleEnum)
+    rolename: RoleEnum;
 
 
 }
+
 export default CreateRoleDto;

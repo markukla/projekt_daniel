@@ -1,15 +1,15 @@
-
 // @ts-ignore
 import {IsString} from "class-validator";
 
 
 class CreatePostDto {
     @IsString()
-    public author:string;
+    public author: string;
     @IsString()
-    public content:string;
+    public content: string;
     @IsString()
-    public title:string;
+    public title: string;
 
 }
+
 export default CreatePostDto;

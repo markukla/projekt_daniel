@@ -11,22 +11,27 @@ import IncorrectPaswordException from "../Exceptions/IncorrectPaswordException";
 import UserWithThisEmailDoesNotExistException from "../Exceptions/UserWithThisEmailDoesNotExistException";
 import LoggedUser from "./loggedUser";
 import BusinesPartner from "../Models/BusinessPartner/businesPartner.entity";
+import NotActiveException from "../Exceptions/NotActiveException";
 
 
 class AuthenticationService {
   private manager = getManager();
 
   public async login(logInData: LogInDto):Promise<LoggedUser> {
-    var loggedUser: LoggedUser = null;
+    var loggedUser: LoggedUser;
     const user: User = await this.manager.findOne(User, {email: logInData.email}, {relations: ['roles']});
-    const businesPartner: BusinesPartner = await this.manager.findOne(BusinesPartner, {email: logInData.email}, {relations: ['roles']})
+    const businesPartner: BusinesPartner = await this.manager.findOne(BusinesPartner, {email: logInData.email}, {relations: ['roles']});
     if (user) {
       const isPasswordMatching = await bcrypt.compare(logInData.password, user.password);
       if (isPasswordMatching) {
 
+
         user.password = undefined;
         const tokenData: TokenData = this.createToken(user);
         loggedUser = new LoggedUser(user, tokenData);
+        return loggedUser;
+
+
       }
         }
     else if (businesPartner) {
@@ -36,13 +41,14 @@ class AuthenticationService {
         businesPartner.password = undefined;
         const tokenData: TokenData = this.createToken(businesPartner);
         loggedUser = new LoggedUser(businesPartner, tokenData);
+        return loggedUser;
       } else {
 
         new UserWithThisEmailDoesNotExistException(logInData.email);
 
 
       }
-      return loggedUser;
+
 
     }
   }
@@ -58,7 +64,7 @@ class AuthenticationService {
 
     const dataStoredInToken: DataStoredInToken = {
 
-      email:user.email
+      id:user.id
     };
     return {
       expiresIn,

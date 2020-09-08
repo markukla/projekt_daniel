@@ -1,5 +1,4 @@
-
-import {getManager, getRepository, Repository} from "typeorm";
+import {getManager} from "typeorm";
 import RepositoryService from "../interfaces/service.interface";
 import User from "../Models/User/user.entity";
 import CreateUserDto from "../Models/User/user.dto";
@@ -8,6 +7,10 @@ import UserWithThatEmailAlreadyExistsException from "../Exceptions/UserWithThatE
 import * as bcrypt from "bcrypt";
 
 import ChangePasswordDto from "../authentication/changePassword.dto";
+import Role from "../Models/Role/role.entity";
+import RoleEnum from "../Models/Role/role.enum";
+import BusinesPartner from "../Models/BusinessPartner/businesPartner.entity";
+import UpdateUserWithouTPasswordDto from "../Models/User/modyfyUser.dto";
 
 class UserService implements RepositoryService{
 
@@ -24,11 +27,23 @@ class UserService implements RepositoryService{
             throw new UserWithThatEmailAlreadyExistsException(userData.email);
         }
         const hashedPassword = await bcrypt.hash(userData.password, 10);
-        const user = this.manager.create(User,{
+
+        let createdRoles:Role[];
+        if(userData.isAdmin){
+            createdRoles=[new Role(RoleEnum.ADMIN),new Role(RoleEnum.EDITOR)];
+        }
+        else {
+            createdRoles=[new Role(RoleEnum.EDITOR)];
+        }
+
+        const user = {
             ...userData,
-            password: hashedPassword,
-        });
-        await this.manager.save(user);
+            roles:createdRoles,
+            password:hashedPassword
+        };
+
+        await this.manager.save(User,user);
+
         user.password = undefined;
 
         return user;
@@ -50,31 +65,46 @@ class UserService implements RepositoryService{
 
     }
 
-    public modifyRecord = async (id:number,userData:User):Promise<User> => {
+    public modifyRecordWithoutPasssword = async (id:number, userData:UpdateUserWithouTPasswordDto):Promise<User> => {
 
 
 
 // i use save for updating, becasue update method does not work with object related to other object with many to many relation, in this case users-and roles
-            userData.userid = Number(id);
-        if (
-            await this.manager.findOne(User,
-                {email: userData.email},
-                {relations: ['roles']}
-            )
-        ) {
+
+    // dont allow to change email if email is asigned to other user or businessPartner, becasuse it make proper log in process imposssible
+const userWithThisEmail:User=
+    await this.manager.findOne(User,
+    {email: userData.email},
+    {relations: ['roles']});
+const businesspartnerWithThisEmail:BusinesPartner=await this.manager.findOne(BusinesPartner,
+    {email: userData.email},
+    {relations: ['roles']}
+);
+const otherUserWithThisEmailAlreadyExist:boolean=(userWithThisEmail&&userWithThisEmail.id!==id);
+const otheBusinessPartnetWithThisEmailAlreadyExist:boolean=(businesspartnerWithThisEmail&&businesspartnerWithThisEmail.id!==id);
+        if (otherUserWithThisEmailAlreadyExist||otheBusinessPartnetWithThisEmailAlreadyExist) {
             throw new UserWithThatEmailAlreadyExistsException(userData.email);
         }
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
-        const user = this.manager.create(User,{
+        let createdRoles:Role[];
+        if(userData.isAdmin){
+            createdRoles=[new Role(RoleEnum.ADMIN),new Role(RoleEnum.EDITOR)];
+        }
+        else {
+            createdRoles=[new Role(RoleEnum.EDITOR)];
+        }
+
+        const user = {
             ...userData,
-            password: hashedPassword,
-        });
-        await this.manager.save(user);
-        user.password = undefined;
+            roles:createdRoles,
+            id:id
+        };
+
+        await this.manager.save(User,user);
+
 
 
         const updatedUser = await  this.manager.findOne(User,id,{relations: ['roles']});
-
+updatedUser.password=undefined;
         return updatedUser;
 
     }

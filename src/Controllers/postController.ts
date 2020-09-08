@@ -7,6 +7,8 @@ import CreatePostDto from "../Models/Post/post.dto";
 
 import Post from "../Models/Post/post.entity";
 import PostService from "../RepositoryServices/postRepositoryService";
+import editorAuthorizationMiddleware from "../middleware/editorAuthorizationMiddleware";
+import authMiddleware from "../middleware/auth.middleware";
 
 
 class PostsController implements Controller<Post>{
@@ -23,7 +25,7 @@ class PostsController implements Controller<Post>{
         this.router.patch(`${this.path}/:id`, validationMiddleware(CreatePostDto, true), this.service.modifyPost);
         this.router.delete(`${this.path}/:id`, this.service.deletePost);
         // validationMiddleware is attached only to this route
-        this.router.post(this.path,validationMiddleware(CreatePostDto), this.service.createPost);
+        this.router.post(this.path,validationMiddleware(CreatePostDto),authMiddleware,editorAuthorizationMiddleware, this.service.createPost);
     }
 
 

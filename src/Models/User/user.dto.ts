@@ -5,23 +5,26 @@ import {IsArray, IsBoolean, IsEmail, IsNumber, IsString} from "class-validator";
 import Role from "../Role/role.entity";
 
 
-
 class CreateUserDto {
 
 
-   @IsString()
+    @IsString()
     fulName: string;
 
-   @IsEmail()
+    @IsEmail()
     email: string;
 
-   @IsString()
-   password:string;
+    @IsString()
+    password: string;
     @IsBoolean()
     active: boolean;
 
-   @IsArray()
-    roles: Role[];
+    @IsBoolean()
+    isAdmin: boolean;
 
 }
+
 export default CreateUserDto;
+
+
+

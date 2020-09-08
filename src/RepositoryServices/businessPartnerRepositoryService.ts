@@ -1,16 +1,15 @@
-import * as express from 'express';
-import {getManager, getRepository, Repository} from "typeorm";
-
-import PostNotFoundException from "../Exceptions/PostNotFoundException";
+import {getManager, getRepository} from "typeorm";
 import RepositoryService from "../interfaces/service.interface";
 
 import BusinesPartner from "../Models/BusinessPartner/businesPartner.entity";
 import CreateBusinessPartnerDto from "../Models/BusinessPartner/businessPartner.dto";
-import CreateUserDto from "../Models/User/user.dto";
-import User from "../Models/User/user.entity";
 import UserWithThatEmailAlreadyExistsException from "../Exceptions/UserWithThatEmailAlreadyExistsException";
 import * as bcrypt from "bcrypt";
 import ChangePasswordDto from "../authentication/changePassword.dto";
+import Role from "../Models/Role/role.entity";
+import RoleEnum from "../Models/Role/role.enum";
+import UpdateBussinessPartnerWithoutPassword from "../Models/BusinessPartner/modyfyBusinessPartent.dto";
+import User from "../Models/User/user.entity";
 
 class BusinessPartnerService implements RepositoryService{
 
@@ -30,9 +29,11 @@ class BusinessPartnerService implements RepositoryService{
         ) {
             throw new UserWithThatEmailAlreadyExistsException(businessPartnerdata.email);
         }
+        const businesPartnerRoles: Role[]=[new Role(RoleEnum.USER)];
         const hashedPassword = await bcrypt.hash(businessPartnerdata.password, 10);
         const businesPartner = this.manager.create(BusinesPartner,{
             ...businessPartnerdata,
+            roles:businesPartnerRoles,
             password: hashedPassword,
         });
         await this.manager.save(businesPartner);
@@ -57,21 +58,28 @@ class BusinessPartnerService implements RepositoryService{
 
     }
 
-    public modifyRecord = async (id:number,businesesPartnerData:BusinesPartner):Promise<BusinesPartner> => {
+    public modifyRecord = async (id:number,businesesPartnerData:UpdateBussinessPartnerWithoutPassword):Promise<BusinesPartner> => {
 
-        businesesPartnerData.business_partner_id = Number(id);
-        if (
-            await this.manager.findOne(BusinesPartner,
+
+        // dont allow to change email if email is asigned to other user or businessPartner, becasuse it make proper log in process imposssible
+        const userWithThisEmail:User=
+            await this.manager.findOne(User,
                 {email: businesesPartnerData.email},
-                {relations: ['roles']}
-            )
-        ) {
+                {relations: ['roles']});
+        const businesspartnerWithThisEmail:BusinesPartner=await this.manager.findOne(BusinesPartner,
+            {email: businesesPartnerData.email},
+            {relations: ['roles']}
+        );
+        const otherUserWithThisEmailAlreadyExist:boolean=(userWithThisEmail&&userWithThisEmail.id!==id);
+        const otheBusinessPartnetWithThisEmailAlreadyExist:boolean=(businesspartnerWithThisEmail&&businesspartnerWithThisEmail.id!==id);
+        if (otherUserWithThisEmailAlreadyExist||otheBusinessPartnetWithThisEmailAlreadyExist) {
             throw new UserWithThatEmailAlreadyExistsException(businesesPartnerData.email);
         }
-        const hashedPassword = await bcrypt.hash(businesesPartnerData.password, 10);
+
         const businessPartner = this.manager.create(BusinesPartner,{
             ...businesesPartnerData,
-            password: hashedPassword,
+            id:id
+
         });
         await this.manager.save(businessPartner);
 
@@ -90,7 +98,7 @@ updatedPartner.password=undefined;
     public changeUserPasswordByEditor=async (businessPartner:BusinesPartner, passwordData:ChangePasswordDto)=>{
 
 
-        var hashedPassword:string= await bcrypt.hash(passwordData.newPassword,10);
+        const hashedPassword:string= await bcrypt.hash(passwordData.newPassword,10);
         businessPartner.password= hashedPassword;
         await this.manager.save(BusinesPartner,businessPartner)
     }

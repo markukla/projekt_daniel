@@ -13,6 +13,7 @@ import adminAuthorizationMiddleware from "../middleware/adminAuthorization.middl
 import UserService from "../RepositoryServices/userRepositoryService";
 import UserNotFoundException from "../Exceptions/UserNotFoundException";
 import ChangePasswordDto from "../authentication/changePassword.dto";
+import UpdateUserWithouTPasswordDto from "../Models/User/modyfyUser.dto";
 
 
 class UserController implements Controller<User>{
@@ -45,10 +46,10 @@ class UserController implements Controller<User>{
 
 
 private modyfyUser = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
-        const userData:User=request.body;
+        const userData:UpdateUserWithouTPasswordDto=request.body;
         const id:number=Number(request.params.id);
         try {
-            const modyfiedUser = await this.service.modifyRecord(id, userData);
+            const modyfiedUser = await this.service.modifyRecordWithoutPasssword(id, userData);
 if(modyfiedUser){
     response.send(modyfiedUser)}
 else {next(new UserNotFoundException(String(id)));

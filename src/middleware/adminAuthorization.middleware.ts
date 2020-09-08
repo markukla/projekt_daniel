@@ -5,13 +5,14 @@ import User from "../Models/User/user.entity";
 
 import NoAdminPrivilligesException from "../Exceptions/NoAdminPrivilligesException";
 import Role from "../Models/Role/role.entity";
+import RoleEnum from "../Models/Role/role.enum";
 
 async function adminAuthorizationMiddleware(request: RequestWithUser, response: Response, next: NextFunction) {
-const user:User=request.user;
+const user=request.user;
 const roles :Role[]=user.roles;
 var isAdmin:boolean=false;
 roles.forEach(role=> {
-    if (role.rolename === 'admin') {
+    if (role.rolename === RoleEnum.ADMIN) {
         isAdmin = true;
     }
 });

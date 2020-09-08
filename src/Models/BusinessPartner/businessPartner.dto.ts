@@ -3,7 +3,7 @@ import {IsArray, IsBoolean, IsEmail, IsString} from "class-validator";
 
 import Role from "../Role/role.entity";
 
-class CreateBusinessPartnerDto extends CreateUserDto{
+class CreateBusinessPartnerDto  {
     @IsString()
     fulName: string;
 
@@ -11,18 +11,17 @@ class CreateBusinessPartnerDto extends CreateUserDto{
     email: string;
 
     @IsString()
-    password:string;
+    password: string;
     @IsBoolean()
     active: boolean;
 
-    @IsArray()
-    roles: Role[];
-     @IsString()
-    code:string;
+    @IsString()
+    code: string;
 
     @IsString()
     businesPartnerCompanyName: string;
 
 
 }
+
 export default CreateBusinessPartnerDto;

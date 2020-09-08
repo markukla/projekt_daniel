@@ -1,6 +1,6 @@
 interface DataStoredInToken {
 
-  email:string;
+  id:number;
 }
 
 export default DataStoredInToken;
