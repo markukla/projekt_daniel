@@ -6,7 +6,6 @@ import WrongAuthenticationTokenException from '../exceptions/WrongAuthentication
 import DataStoredInToken from '../interfaces/dataStoredInToken';
 
 import User from "../Models/User/user.entity";
-import BusinesPartner from "../Models/BusinessPartner/businesPartner.entity";
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import NotActiveException from "../Exceptions/NotActiveException";
 
@@ -24,7 +23,7 @@ async function authMiddleware(request: RequestWithUser, response: Response, next
 
             const user: User = await manager.findOne(User, {id: verificationResponse.id}, {relations: ['roles']})
             console.log(user);
-            const businesPartner: BusinesPartner = await manager.findOne(BusinesPartner, {id: verificationResponse.id}, {relations: ['roles']})
+
 
 
             if (user) {
@@ -37,18 +36,8 @@ async function authMiddleware(request: RequestWithUser, response: Response, next
                 else {
                     next(new NotActiveException());
                 }
-            } else if (businesPartner) {
-                var partnerActive: boolean = businesPartner.active;
-
-                if (partnerActive) {
-
-                    request.user = businesPartner;
-                    next();
-                }
-                else {
-                    next(new NotActiveException());
-                }
-            } else {
+            }
+             else {
                 next(new WrongAuthenticationTokenException());
             }
         } catch (error) {

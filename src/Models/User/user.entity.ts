@@ -17,8 +17,14 @@ class User {
     password: string;
     @Column()
     active: boolean;
-    @IsBoolean()
-    isAdmin:boolean;
+    @Column()
+    isAdmin: boolean;
+    @Column()
+    isPartner: boolean;
+    @Column({nullable:true})
+    code?: string;
+    @Column({nullable:true})
+    businesPartnerCompanyName?: string;
 
 @ManyToMany(()=>Role)  //here we reference to entity name, not table name
     @JoinTable()

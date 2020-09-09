@@ -2,17 +2,19 @@ import * as express from 'express';
 
 import Controller from 'interfaces/controller.interface';
 import validationMiddleware from "../middleware/validation.middleware";
-import BusinesPartner from "../Models/BusinessPartner/businesPartner.entity";
+
 import BusinessPartnerService from "../RepositoryServices/businessPartnerRepositoryService";
 import UserNotFoundException from "../Exceptions/UserNotFoundException";
 import ChangePasswordDto from "../authentication/changePassword.dto";
 import CreateBusinessPartnerDto from "../Models/BusinessPartner/businessPartner.dto";
 import authMiddleware from "../middleware/auth.middleware";
 import editorAuthorizationMiddleware from "../middleware/editorAuthorizationMiddleware";
+import User from "../Models/User/user.entity";
+import UpdateBussinessPartnerWithoutPassword from "../Models/BusinessPartner/modyfyBusinessPartent.dto";
 
 
 
-class BusinessPartnerController implements Controller<BusinesPartner>{
+class BusinessPartnerController implements Controller<User>{
     public path = '/business_partners';
     public router = express.Router();
     public  service:BusinessPartnerService=new BusinessPartnerService();
@@ -43,7 +45,7 @@ class BusinessPartnerController implements Controller<BusinesPartner>{
 
 
     private modyfyPartner = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
-        const partnerData:BusinesPartner=request.body;
+        const partnerData:UpdateBussinessPartnerWithoutPassword=request.body;
         const id:number=Number(request.params.id);
         try {
             const modyfiedPartner = await this.service.modifyRecord(id, partnerData);
@@ -62,7 +64,7 @@ class BusinessPartnerController implements Controller<BusinesPartner>{
     private getAllPartners = async (request: express.Request, response: express.Response, next: express.NextFunction)=>
     {
         try{
-            const businesParners:BusinesPartner[]=await this.service.getAllRecords();
+            const businesParners:User[]=await this.service.getAllRecords();
             response.send(businesParners);
 
 
@@ -118,7 +120,7 @@ class BusinessPartnerController implements Controller<BusinesPartner>{
             const businesPartner=await this.service.findOneRecord(id);
             if(businesPartner){
                 const passwordData:ChangePasswordDto=request.body;
-                this.service.changeUserPasswordByEditor(businesPartner,passwordData);
+              await this.service.changeUserPasswordByEditor(businesPartner,passwordData);
                 response.send({status:200,
                     message:"password has been successfully updated"})
 

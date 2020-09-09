@@ -52,11 +52,11 @@ class AuthenticationController implements Controller<User> {
         const passwordData: ChangePasswordDto = request.body;
         const user=request.user;
         try{
-            this.service.changePasswordByUser(user,passwordData);
+            await this.service.changePasswordByLoggedUser(user,passwordData);
             response.send({
                 status:200,
                 message:"your password has been changed"
-            })
+            });
 
         }
         catch (error) {

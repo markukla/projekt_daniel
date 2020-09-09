@@ -28,7 +28,7 @@ class UserController implements Controller<User>{
         this.router.get(this.path, authMiddleware,adminAuthorizationMiddleware,this.getAllUsers);
         this.router.get(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.getOneUserById);
         this.router.patch(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(CreateUserDto, true), this.modyfyUser);
-        this.router.patch(`${this.path}/:id/changepassword`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(ChangePasswordDto, true), this.changePasswordByAdmin);
+        this.router.patch(`${this.path}/:id/changePassword`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(ChangePasswordDto, true), this.changePasswordByAdmin);
         this.router.delete(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.deleteOneUserById);
         this.router.post(this.path,validationMiddleware(CreateUserDto), this.registration);
     }
@@ -49,7 +49,7 @@ private modyfyUser = async (request: express.Request, response: express.Response
         const userData:UpdateUserWithouTPasswordDto=request.body;
         const id:number=Number(request.params.id);
         try {
-            const modyfiedUser = await this.service.modifyRecordWithoutPasssword(id, userData);
+            const modyfiedUser = await this.service.modifyUserWithoutPasssword(id, userData);
 if(modyfiedUser){
     response.send(modyfiedUser)}
 else {next(new UserNotFoundException(String(id)));
@@ -65,7 +65,7 @@ else {next(new UserNotFoundException(String(id)));
 private getAllUsers = async (request: express.Request, response: express.Response, next: express.NextFunction)=>
 {
 try{
-    const users:User[]=await this.service.getAllRecords();
+    const users:User[]=await this.service.getAllAdminsOrEditors();
     response.send(users);
 
 
@@ -116,14 +116,15 @@ const id:string=request.params.id;
     }
 
     private changePasswordByAdmin = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
-        const id:string=request.params.id;
+
         try{
+            const id:string=request.params.id;
             const user=await this.service.findOneRecord(id);
             if(user){
                 const passwordData:ChangePasswordDto=request.body;
-                this.service.changeUserPasswordByAdmin(user,passwordData);
+               await this.service.changeUserPasswordByAdmin(user,passwordData);
                 response.send({status:200,
-                message:"password has been successfully updated"})
+                message:"password has been successfully updated"});
 
             }
             else {
