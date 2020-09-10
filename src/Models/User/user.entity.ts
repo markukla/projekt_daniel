@@ -17,10 +17,7 @@ class User {
     password: string;
     @Column()
     active: boolean;
-    @Column()
-    isAdmin: boolean;
-    @Column()
-    isPartner: boolean;
+
     @Column({nullable:true})
     code?: string;
     @Column({nullable:true})

@@ -13,6 +13,8 @@ class Role {
     constructor(rolename: RoleEnum) {
         this.rolename = rolename;
     }
+
+
 }
 
 export default Role;

@@ -1,7 +1,7 @@
 enum RoleEnum {
     ADMIN = "admin",
     EDITOR = "editor",
-    USER = "user"
+    PARTNER = "partner"
 
 }
 export default RoleEnum;

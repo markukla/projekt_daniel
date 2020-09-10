@@ -16,6 +16,7 @@ import ChangePasswordDto from "../authentication/changePassword.dto";
 import UpdateUserWithouTPasswordDto from "../Models/User/modyfyUser.dto";
 
 
+
 class UserController implements Controller<User>{
     public path = '/users';
     public router = express.Router();
@@ -27,16 +28,16 @@ class UserController implements Controller<User>{
     private initializeRoutes() {
         this.router.get(this.path, authMiddleware,adminAuthorizationMiddleware,this.getAllUsers);
         this.router.get(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.getOneUserById);
-        this.router.patch(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(CreateUserDto, true), this.modyfyUser);
+        this.router.patch(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(CreateUserDto, true), this.updateUserById);
         this.router.patch(`${this.path}/:id/changePassword`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(ChangePasswordDto, true), this.changePasswordByAdmin);
         this.router.delete(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.deleteOneUserById);
-        this.router.post(this.path,validationMiddleware(CreateUserDto), this.registration);
+        this.router.post(this.path,validationMiddleware(CreateUserDto), this.registerOneUser);
     }
 
-    private registration = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    private registerOneUser = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const userData: CreateUserDto = request.body;
         try {
-            const user = await this.service.register(userData);
+            const user = await this.service.registerUser(userData);
 
             response.send(user);
         } catch (error) {
@@ -45,11 +46,11 @@ class UserController implements Controller<User>{
     }
 
 
-private modyfyUser = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
+private updateUserById = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
         const userData:UpdateUserWithouTPasswordDto=request.body;
         const id:number=Number(request.params.id);
         try {
-            const modyfiedUser = await this.service.modifyUserWithoutPasssword(id, userData);
+            const modyfiedUser = await this.service.updateUserWithoutPasssword(id, userData);
 if(modyfiedUser){
     response.send(modyfiedUser)}
 else {next(new UserNotFoundException(String(id)));
@@ -66,6 +67,17 @@ private getAllUsers = async (request: express.Request, response: express.Respons
 {
 try{
     const users:User[]=await this.service.getAllAdminsOrEditors();
+
+    /*
+    one way to hide information which sholul be removed from final endpoint:
+    users.forEach(user=>{
+        user.code=undefined;
+        user.businesPartnerCompanyName=undefined;
+        user.roles=undefined;
+        user.id=undefined;
+        user.password=undefined;
+    });
+*/
     response.send(users);
 
 
@@ -80,7 +92,7 @@ catch (error) {
 private getOneUserById = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
 const id:string=request.params.id;
         try{
-    const foundUser=await this.service.findOneRecord(id);
+    const foundUser=await this.service.findOneUserById(id);
     if(foundUser){
         response.send(foundUser)
     }
@@ -98,7 +110,7 @@ const id:string=request.params.id;
     private deleteOneUserById = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
         const id:number=Number(request.params.id);
         try{
-            const deleTedResponse=await this.service.deleteRecord(id);
+            const deleTedResponse=await this.service.deleteUserById(id);
             if(deleTedResponse.affected===1){
                 response.send({
                     status:200,
@@ -119,7 +131,7 @@ const id:string=request.params.id;
 
         try{
             const id:string=request.params.id;
-            const user=await this.service.findOneRecord(id);
+            const user=await this.service.findOneUserById(id);
             if(user){
                 const passwordData:ChangePasswordDto=request.body;
                await this.service.changeUserPasswordByAdmin(user,passwordData);

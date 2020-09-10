@@ -11,6 +11,7 @@ import authMiddleware from "../middleware/auth.middleware";
 import editorAuthorizationMiddleware from "../middleware/editorAuthorizationMiddleware";
 import User from "../Models/User/user.entity";
 import UpdateBussinessPartnerWithoutPassword from "../Models/BusinessPartner/modyfyBusinessPartent.dto";
+import BusinessPartnerNotFoundException from "../Exceptions/BusinessPartnerNotFoundException";
 
 
 
@@ -35,7 +36,7 @@ class BusinessPartnerController implements Controller<User>{
     private registration = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const businessPartnerData: CreateBusinessPartnerDto = request.body;
         try {
-            const user = await this.service.register(businessPartnerData);
+            const user = await this.service.registerBusinessPartner(businessPartnerData);
 
             response.send(user);
         } catch (error) {
@@ -48,7 +49,7 @@ class BusinessPartnerController implements Controller<User>{
         const partnerData:UpdateBussinessPartnerWithoutPassword=request.body;
         const id:number=Number(request.params.id);
         try {
-            const modyfiedPartner = await this.service.modifyRecord(id, partnerData);
+            const modyfiedPartner = await this.service.updatePartnerById(id, partnerData);
             if(modyfiedPartner){
                 response.send(modyfiedPartner)}
             else {next(new UserNotFoundException(String(id)));
@@ -64,7 +65,7 @@ class BusinessPartnerController implements Controller<User>{
     private getAllPartners = async (request: express.Request, response: express.Response, next: express.NextFunction)=>
     {
         try{
-            const businesParners:User[]=await this.service.getAllRecords();
+            const businesParners:User[]=await this.service.getAllBusinessPartners();
             response.send(businesParners);
 
 
@@ -79,7 +80,7 @@ class BusinessPartnerController implements Controller<User>{
     private getOnePartnerById = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
         const id:string=request.params.id;
         try{
-            const foundPartner=await this.service.findOneRecord(id);
+            const foundPartner=await this.service.findOnePartnerById(id);
             if(foundPartner){
                 response.send(foundPartner)
             }
@@ -97,7 +98,7 @@ class BusinessPartnerController implements Controller<User>{
     private deleteOnePartnerById = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
         const id:number=Number(request.params.id);
         try{
-            const deleTedResponse=await this.service.deleteRecord(id);
+            const deleTedResponse=await this.service.deletePartnerById(id);
             if(deleTedResponse.affected===1){
                 response.send({
                     status:200,
@@ -117,16 +118,16 @@ class BusinessPartnerController implements Controller<User>{
     private changePasswordByEditor = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
         const id:string=request.params.id;
         try{
-            const businesPartner=await this.service.findOneRecord(id);
+            const businesPartner=await this.service.findOnePartnerById(id);
             if(businesPartner){
                 const passwordData:ChangePasswordDto=request.body;
-              await this.service.changeUserPasswordByEditor(businesPartner,passwordData);
+              await this.service.changePartnerPasswordByEditor(businesPartner,passwordData);
                 response.send({status:200,
                     message:"password has been successfully updated"})
 
             }
             else {
-                next(new UserNotFoundException(String(id))) ;
+                next(new BusinessPartnerNotFoundException(String(id))) ;
             }
         }
         catch (error) {
