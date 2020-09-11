@@ -3,22 +3,22 @@ import * as express from 'express';
 import Controller from 'interfaces/controller.interface';
 import validationMiddleware from "../middleware/validation.middleware";
 
-import BusinessPartnerService from "../RepositoryServices/businessPartnerRepositoryService";
 import UserNotFoundException from "../Exceptions/UserNotFoundException";
 import ChangePasswordDto from "../authentication/changePassword.dto";
-import CreateBusinessPartnerDto from "../Models/BusinessPartner/businessPartner.dto";
+import CreateBusinessPartnerDto from "../Models/Users/BusinessPartner/businessPartner.dto";
 import authMiddleware from "../middleware/auth.middleware";
 import editorAuthorizationMiddleware from "../middleware/editorAuthorizationMiddleware";
-import User from "../Models/User/user.entity";
-import UpdateBussinessPartnerWithoutPassword from "../Models/BusinessPartner/modyfyBusinessPartent.dto";
+import User from "../Models/Users/user.entity";
+import UpdateBussinessPartnerWithoutPassword from "../Models/Users/BusinessPartner/modyfyBusinessPartent.dto";
 import BusinessPartnerNotFoundException from "../Exceptions/BusinessPartnerNotFoundException";
+import UserService from "../RepositoryServices/userRepositoryService";
 
 
 
 class BusinessPartnerController implements Controller<User>{
     public path = '/business_partners';
     public router = express.Router();
-    public  service:BusinessPartnerService=new BusinessPartnerService();
+    public  service:UserService=new UserService();
     constructor() {
         this.initializeRoutes();
     }

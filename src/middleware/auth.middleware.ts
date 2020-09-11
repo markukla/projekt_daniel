@@ -5,7 +5,7 @@ import AuthenticationTokenMissingException from '../exceptions/AuthenticationTok
 import WrongAuthenticationTokenException from '../exceptions/WrongAuthenticationTokenException';
 import DataStoredInToken from '../interfaces/dataStoredInToken';
 
-import User from "../Models/User/user.entity";
+import User from "../Models/Users/user.entity";
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import NotActiveException from "../Exceptions/NotActiveException";
 

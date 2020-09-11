@@ -4,8 +4,8 @@ import Post from "../Models/Post/post.entity";
 import CreatePostDto from "../Models/Post/post.dto";
 import PostNotFoundException from "../Exceptions/PostNotFoundException";
 import RepositoryService from "../interfaces/service.interface";
-import User from "../Models/User/user.entity";
-import CreateUserDto from "../Models/User/user.dto";
+import User from "../Models/Users/user.entity";
+import CreatePrivilegedUserDto from "../Models/Users/PrivilegedUsers/user.dto";
 import Role from "../Models/Role/role.entity";
 import CreateRoleDto from "../Models/Role/role.dto";
 

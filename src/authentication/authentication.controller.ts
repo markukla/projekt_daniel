@@ -2,7 +2,7 @@ import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
 import validationMiddleware from '../middleware/validation.middleware';
 
-import User from "../Models/User/user.entity";
+import User from "../Models/Users/user.entity";
 
 import LogInDto from "./logIn.dto";
 import WrongCredentialsException from "../Exceptions/WrongCredentialsException";

@@ -2,10 +2,10 @@ import {Column} from "typeorm";
 
 
 import {IsArray, IsBoolean, IsEmail, IsNumber, IsString} from "class-validator";
-import Role from "../Role/role.entity";
+import Role from "../../Role/role.entity";
 
 
-class CreateUserDto {
+class CreatePrivilegedUserDto {
 
 
     @IsString()
@@ -24,7 +24,7 @@ class CreateUserDto {
 
 }
 
-export default CreateUserDto;
+export default CreatePrivilegedUserDto;
 
 
 

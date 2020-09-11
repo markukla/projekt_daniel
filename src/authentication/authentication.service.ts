@@ -4,7 +4,7 @@ import {getManager, getRepository} from 'typeorm';
 import UserWithThatEmailAlreadyExistsException from '../exceptions/UserWithThatEmailAlreadyExistsException';
 import DataStoredInToken from '../interfaces/dataStoredInToken';
 import TokenData from '../interfaces/tokenData.interface';
-import User from "../Models/User/user.entity";
+import User from "../Models/Users/user.entity";
 import LogInDto from "./logIn.dto";
 import ChangePasswordDto from "./changePassword.dto";
 import IncorrectPaswordException from "../Exceptions/IncorrectPaswordException";

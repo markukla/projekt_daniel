@@ -1,7 +1,7 @@
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import {NextFunction, Response} from "express";
 
-import User from "../Models/User/user.entity";
+import User from "../Models/Users/user.entity";
 
 import NoAdminPrivilligesException from "../Exceptions/NoAdminPrivilligesException";
 import Role from "../Models/Role/role.entity";

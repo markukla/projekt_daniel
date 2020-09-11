@@ -1,4 +1,4 @@
-import User from "../Models/User/user.entity";
+import User from "../Models/Users/user.entity";
 import TokenData from "../interfaces/tokenData.interface";
 
 

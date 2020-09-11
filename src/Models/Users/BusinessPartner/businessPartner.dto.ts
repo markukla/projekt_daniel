@@ -1,7 +1,7 @@
-import CreateUserDto from "../User/user.dto";
+import CreatePrivilegedUserDto from "../PrivilegedUsers/user.dto";
 import {IsArray, IsBoolean, IsEmail, IsString} from "class-validator";
 
-import Role from "../Role/role.entity";
+import Role from "../../Role/role.entity";
 
 class CreateBusinessPartnerDto  {
     @IsString()

@@ -1,6 +1,6 @@
 import {IsBoolean, IsEmail, IsString} from "class-validator";
 
-class UpdateUserWithouTPasswordDto {
+class UpdatePrivilegedUserWithouTPasswordDto {
     @IsString()
     fulName: string;
 
@@ -14,4 +14,4 @@ class UpdateUserWithouTPasswordDto {
     isAdmin: boolean;
 
 }
-export default UpdateUserWithouTPasswordDto;
+export default UpdatePrivilegedUserWithouTPasswordDto;
