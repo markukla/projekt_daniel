@@ -15,6 +15,7 @@ import UserNotFoundException from "../Exceptions/UserNotFoundException";
 import CreateBusinessPartnerDto from "../Models/Users/BusinessPartner/businessPartner.dto";
 import BusinessPartnerNotFoundException from "../Exceptions/BusinessPartnerNotFoundException";
 import UpdateBussinessPartnerWithoutPassword from "../Models/Users/BusinessPartner/modyfyBusinessPartent.dto";
+import UserWithThisEmailDoesNotExistException from "../Exceptions/UserWithThisEmailDoesNotExistException";
 
 class UserService implements RepositoryService {
 
@@ -24,13 +25,20 @@ class UserService implements RepositoryService {
     // In this app privileged users are admins and editors. Editor can be changed to admin and admin to editor
 
 
+    public async findUserByEmail(email:string):Promise<User>{
+        const foundUser= await this.manager.findOne(User,
+            {email: email},
+            {relations: ['roles']});
+
+            return foundUser;
+
+
+
+    }
+
     public async registerPrivilegedUser(userData: CreatePrivilegedUserDto): Promise<User> {
-        if (
-            await this.manager.findOne(User,
-                {email: userData.email},
-                {relations: ['roles']}
-            )
-        ) {
+        if (this.findUserByEmail(userData.email))
+         {
             throw new UserWithThatEmailAlreadyExistsException(userData.email);
         }
         const validatedPassword = validatePassword(userData.password);
@@ -170,13 +178,8 @@ if(this.UserHasPartnerRole(user)){ // dont allow to change parter role on user e
 
     // business partners are app users with lowest priviliges.
     public async registerBusinessPartner(businessPartnerdata: CreateBusinessPartnerDto):Promise<User> {
-        if (
-
-            await this.manager.findOne(User,
-                {email: businessPartnerdata.email},
-                {relations: ['roles']}
-            )
-        ) {
+        if (this.findUserByEmail(businessPartnerdata.email))
+         {
             throw new UserWithThatEmailAlreadyExistsException(businessPartnerdata.email);
         }
         const businesPartnerRoles: Role[]=[new Role(RoleEnum.PARTNER)];

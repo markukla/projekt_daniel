@@ -36,6 +36,9 @@ class AuthenticationService {
 
 
             }
+            else {
+                throw new WrongCredentialsException();
+            }
         } else {
             throw new WrongCredentialsException();
         }
@@ -70,10 +73,11 @@ class AuthenticationService {
             if (validatedPassword) {
                 var hashedPassword: string = await bcrypt.hash(validatedPassword, 10);
                 user.password = hashedPassword;
-                await this.manager.save(User, user)
-                const updatedUser = await this.manager.findOne(User, user.id);
+                const updatedUser=await this.manager.save(User, user)
+
                 return updatedUser;
             }
+
 
 
         } else {

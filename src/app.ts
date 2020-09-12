@@ -23,6 +23,9 @@ class App {
     private connectToDatabase() {
 
     }
+    public getServer() {
+        return this.app;
+    }
 
 
 
