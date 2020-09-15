@@ -1,6 +1,7 @@
 import Role from "../Role/role.entity";
 import RoleEnum from "../Role/role.enum";
 import User from "./user.entity";
+import CreatePrivilegedUserDto from "./PrivilegedUsers/user.dto";
 
 class UsersExampleForTests {
      public hashedPassword:string="$2b$10$fpooDkA4UaG/9nDsuuUmB.bIUJ7ittTknMl8nEMQ9o28UQPXqdZBC";
@@ -66,6 +67,18 @@ class UsersExampleForTests {
         businesPartnerCompanyName: 'polpharma',
         code: 'AST4'
     }
+    public createAdminUserDto:CreatePrivilegedUserDto={
+
+
+    "fulName":'John Smith',
+    "email":'john@smith.com',
+    "password":"Nicram12",
+    "active":true,
+    "isAdmin":true
+
+    }
+
+
 
 }
 export default UsersExampleForTests;
