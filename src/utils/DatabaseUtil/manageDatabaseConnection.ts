@@ -1,24 +1,27 @@
+import 'reflect-metadata';
+import 'es6-shim';
+import  'dotenv/config';
 import {Connection, ConnectionOptions, createConnection} from "typeorm";
 import * as typeorm from "typeorm";
-import {config_test} from "../../ormconfig";
+
 import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
+import {config_test} from "../../../ormconfig";
+
 
 async function connectToDatabase(config:PostgresConnectionOptions){
     try {
       await createConnection(config);
-        console.log(`connected to database= ${config.database} on port: ${config.port}`);
+        console.log(`connected to database=${config.database} on port ${config.port} `);
 
-
-
-    } catch (error) {
+      } catch (error) {
         console.log('Error while connecting to the database', error);
 
     }
 
 
 }
-async function closeConnectionToDatabase(config:PostgresConnectionOptions) {
-    await typeorm.getConnection().close();
+ async function closeConnectionToDatabase(config:PostgresConnectionOptions) {
+   await typeorm.getConnection().close();
     console.log(`connection to database= ${config.database} has been closed`);
 }
 

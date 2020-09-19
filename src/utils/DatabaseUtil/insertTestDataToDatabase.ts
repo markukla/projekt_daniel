@@ -1,9 +1,13 @@
-import UsersExampleForTests from "../../src/Models/Users/usersExampleForTests";
-import User from "../../src/Models/Users/user.entity";
-import Role from "../../src/Models/Role/role.entity";
-import RoleEnum from "../../src/Models/Role/role.enum";
-import * as typeorm from "typeorm";
-import {EntityManager, getManager} from "typeorm";
+import 'reflect-metadata';
+import 'es6-shim';
+import  'dotenv/config';
+import UsersExampleForTests from "../../Models/Users/usersExampleForTests";
+import User from "../../Models/Users/user.entity";
+import Role from "../../Models/Role/role.entity";
+import RoleEnum from "../../Models/Role/role.enum";
+import {EntityManager} from "typeorm";
+
+
 
 const usersExampleForTests:UsersExampleForTests=new UsersExampleForTests();
 const users:User[]=[usersExampleForTests.activeAdminUserExample,usersExampleForTests.inactiveAdminUserExample,usersExampleForTests.activeEditorUserExample,usersExampleForTests.activePartnerUserExample,usersExampleForTests.inactivePartnerUserExample];

@@ -1,5 +1,6 @@
 // @ts-ignore
 import { ConnectionOptions } from 'typeorm';
+// @ts-ignore
 import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
 
 const config: PostgresConnectionOptions = {
@@ -11,24 +12,23 @@ const config: PostgresConnectionOptions = {
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
     entities: [
-        __dirname + '/../**/*.entity{.ts,.js}',
+        __dirname + '/../**/*.entity.{js,ts}'
     ],
     synchronize: true,
 };
 const config_test: PostgresConnectionOptions = {
 
     type: 'postgres',
-    host:process.env.POSTGRES_HOST,
-    port:Number(process.env.POSTGRES_TEST_PORT),
+    host: process.env.POSTGRES_HOST,
+    port: Number(process.env.POSTGRES_TEST_PORT),
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    database:process.env.POSTGRES_TEST_DB,
+    database: process.env.POSTGRES_TEST_DB,
     entities: [
-        __dirname + '/../**/*.entity{.ts,.js}',
+        __dirname + '/../**/*.entity.{js,ts}'
     ],
     synchronize: true,
-    dropSchema:true,
-    logging:false
-
+    dropSchema: true,
+    logging: false
 };
  export {config,config_test};

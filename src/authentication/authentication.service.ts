@@ -13,7 +13,7 @@ import LoggedUser from "./loggedUser";
 
 import NotActiveException from "../Exceptions/NotActiveException";
 import WrongCredentialsException from "../Exceptions/WrongCredentialsException";
-import validatePassword from "./validate.password";
+import validatePassword from "../utils/validatePassword/validate.password";
 import WeekPasswordException from "../Exceptions/ToWeekPasswordException";
 
 
@@ -69,15 +69,21 @@ class AuthenticationService {
         const oldPasswordMatch = await bcrypt.compare(passwordData.oldPassword, user.password);
 
         if (oldPasswordMatch) {
-            const validatedPassword: string = validatePassword(passwordData.newPassword);
-            if (validatedPassword) {
-                var hashedPassword: string = await bcrypt.hash(validatedPassword, 10);
-                user.password = hashedPassword;
-                const updatedUser=await this.manager.save(User, user)
+            let hashedPassword:string=null;
+            const validationResult= validatePassword(passwordData.newPassword);
 
-                return updatedUser;
+
+            if(validationResult.validatedPassword){
+                hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
+            }
+            else{
+                throw new WeekPasswordException(validationResult.foultList);
             }
 
+
+            user.password = hashedPassword;
+            const updatedUser=await this.manager.save(User, user);
+            return updatedUser;
 
 
         } else {

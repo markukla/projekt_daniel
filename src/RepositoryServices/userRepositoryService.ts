@@ -10,12 +10,15 @@ import ChangePasswordDto from "../authentication/changePassword.dto";
 import Role from "../Models/Role/role.entity";
 import RoleEnum from "../Models/Role/role.enum";
 import UpdatePrivilegedUserWithouTPasswordDto from "../Models/Users/PrivilegedUsers/modyfyUser.dto";
-import validatePassword from "../authentication/validate.password";
+import validatePassword from "../utils/validatePassword/validate.password";
 import UserNotFoundException from "../Exceptions/UserNotFoundException";
 import CreateBusinessPartnerDto from "../Models/Users/BusinessPartner/businessPartner.dto";
 import BusinessPartnerNotFoundException from "../Exceptions/BusinessPartnerNotFoundException";
 import UpdateBussinessPartnerWithoutPassword from "../Models/Users/BusinessPartner/modyfyBusinessPartent.dto";
 import UserWithThisEmailDoesNotExistException from "../Exceptions/UserWithThisEmailDoesNotExistException";
+import WeekPasswordException from "../Exceptions/ToWeekPasswordException";
+import PasswordValidationResult from "../utils/validatePassword/passwordValidationResult";
+import PrivilligedUserNotFoundException from "../Exceptions/PrivilligedUserNotFoundException";
 
 class UserService implements RepositoryService {
 
@@ -39,8 +42,16 @@ class UserService implements RepositoryService {
         if (await this.findUserByEmail(userData.email)) {
             throw new UserWithThatEmailAlreadyExistsException(userData.email);
         }
-        const validatedPassword = validatePassword(userData.password);
-        const hashedPassword = await bcrypt.hash(validatedPassword, 10);
+        const validationResult:PasswordValidationResult= validatePassword(userData.password); // returns password if valid ot list of reason why password is not valid
+
+        let hashedPassword=null;
+        if(validationResult.validatedPassword){ //
+           hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
+        }
+        else{
+            throw new WeekPasswordException(validationResult.foultList);
+        }
+
 
         let createdRoles: Role[];
         if (userData.isAdmin) {
@@ -68,6 +79,7 @@ class UserService implements RepositoryService {
         // in relation option: it takes table name as paramter, not enity name
 
         const allUsers: User[] = await this.manager.find(User, {relations: ['roles']});
+
         const adminOrEditors: User[] = [];
 
 
@@ -92,7 +104,7 @@ class UserService implements RepositoryService {
         if (!this.UserHasPartnerRole(foundUser)) {
             return foundUser;
         } else {
-            new UserNotFoundException(String(id));
+            throw new PrivilligedUserNotFoundException(String(id));
         }
 
 
@@ -162,12 +174,28 @@ class UserService implements RepositoryService {
         if (this.UserHasPartnerRole(user)) { // dont allow to change parter role on user endpoint
             throw new UserNotFoundException(String(user.id));
         }
-        const validatedPassword: string = validatePassword(passwordData.newPassword);
-        var hashedPassword: string = await bcrypt.hash(validatedPassword, 10);
-        user.password = hashedPassword;
-        await this.manager.save(User, user)
-        const updatedUser = await this.manager.findOne(User, user.id);
-        return updatedUser;
+        let hashedPassword:string=null;
+        const validationResult= validatePassword(passwordData.newPassword);
+
+
+        if(validationResult.validatedPassword){ //
+            hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
+        }
+        else{
+            throw new WeekPasswordException(validationResult.foultList);
+        }
+
+
+            user.password = hashedPassword;
+            const updatedUser=await this.manager.save(User, user);
+            return updatedUser;
+
+
+
+
+
+
+
 
     }
 
@@ -273,12 +301,21 @@ class UserService implements RepositoryService {
         if (!this.UserHasPartnerRole(businessPartner)) {
             throw new BusinessPartnerNotFoundException(String(businessPartner.id));
         }
-        const validatedPassword = validatePassword(passwordData.newPassword);
-        const hashedPassword: string = await bcrypt.hash(validatedPassword, 10);
+        let hashedPassword:string=null;
+        const validationResult= validatePassword(passwordData.newPassword);
+
+
+        if(validationResult.validatedPassword){ //
+            hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
+        }
+        else{
+            throw new WeekPasswordException(validationResult.foultList);
+        }
+
+
         businessPartner.password = hashedPassword;
-        await this.manager.save(User, businessPartner)
-        const updatedBusinessParter = await this.findOnePartnerById(String(businessPartner.id));
-        return updatedBusinessParter;
+        const updatedPartner=await this.manager.save(User, businessPartner);
+        return updatedPartner;
     }
 
 

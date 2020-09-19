@@ -1,19 +1,19 @@
 import * as typeorm from 'typeorm';
-import UserWithThatEmailAlreadyExistsException from '../../exceptions/UserWithThatEmailAlreadyExistsException';
-import TokenData from '../../interfaces/tokenData.interface';
+import UserWithThatEmailAlreadyExistsException from '../Exceptions/UserWithThatEmailAlreadyExistsException';
+import TokenData from '../interfaces/tokenData.interface';
 
-import AuthenticationService from '../authentication.service';
-import CreatePrivilegedUserDto from "../../Models/Users/PrivilegedUsers/user.dto";
-import LogInDto from "../logIn.dto";
-import User from "../../Models/Users/user.entity";
-import Role from "../../Models/Role/role.entity";
-import RoleEnum from "../../Models/Role/role.enum";
-import WrongCredentialsException from "../../Exceptions/WrongCredentialsException";
+import AuthenticationService from '../authentication/authentication.service';
+import CreatePrivilegedUserDto from "../Models/Users/PrivilegedUsers/user.dto";
+import LogInDto from "../authentication/logIn.dto";
+import User from "../Models/Users/user.entity";
+import Role from "../Models/Role/role.entity";
+import RoleEnum from "../Models/Role/role.enum";
+import WrongCredentialsException from "../Exceptions/WrongCredentialsException";
 import {getManager} from "typeorm";
 import * as bcrypt from 'bcrypt';
-import UsersExampleForTests from "../../Models/Users/usersExampleForTests";
-import ChangePasswordDto from "../changePassword.dto";
-import IncorrectPaswordException from "../../Exceptions/IncorrectPaswordException";
+import UsersExampleForTests from "../Models/Users/usersExampleForTests";
+import ChangePasswordDto from "../authentication/changePassword.dto";
+import IncorrectPaswordException from "../Exceptions/IncorrectPaswordException";
 
 (typeorm as any).getManager = jest.fn();
 

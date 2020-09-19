@@ -2,9 +2,9 @@ import * as request from 'supertest';
 import * as typeorm from 'typeorm';
 
 
-import AuthenticationController from '../authentication.controller';
-import CreatePrivilegedUserDto from "../../Models/Users/PrivilegedUsers/user.dto";
-import App from "../../app";
+import AuthenticationController from '../authentication/authentication.controller';
+import CreatePrivilegedUserDto from "../Models/Users/PrivilegedUsers/user.dto";
+import App from "../app";
 
 (typeorm as any).getRepository = jest.fn();
 

@@ -1,12 +1,12 @@
 import * as typeorm from "typeorm";
-import UsersExampleForTests from "../../Models/Users/usersExampleForTests";
-import CreatePrivilegedUserDto from "../../Models/Users/PrivilegedUsers/user.dto";
-import UserService from "../../RepositoryServices/userRepositoryService";
-import UserWithThatEmailAlreadyExistsException from "../../Exceptions/UserWithThatEmailAlreadyExistsException";
+import UsersExampleForTests from "../Models/Users/usersExampleForTests";
+import CreatePrivilegedUserDto from "../Models/Users/PrivilegedUsers/user.dto";
+import UserService from "../RepositoryServices/userRepositoryService";
+import UserWithThatEmailAlreadyExistsException from "../Exceptions/UserWithThatEmailAlreadyExistsException";
 import {createConnection, EntityManager, getManager} from "typeorm";
-import {config, config_test} from "../../../ormconfig";
-import {closeConnectionToDatabase, connectToDatabase} from "../../../utils/DatabaseUtil/manageDatabaseConnection";
-import {insertRolesToDatabase, insertTestUsersToDatabase} from "../../../utils/DatabaseUtil/insertTestDataToDatabase";
+import {config, config_test} from "../../ormconfig";
+import {closeConnectionToDatabase, connectToDatabase} from "../utils/DatabaseUtil/manageDatabaseConnection";
+import {insertRolesToDatabase, insertTestUsersToDatabase} from "../utils/DatabaseUtil/insertTestDataToDatabase";
 
 
 beforeAll( ()=>{

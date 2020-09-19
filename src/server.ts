@@ -4,13 +4,13 @@ import 'dotenv/config';
 import 'reflect-metadata';
 
 import {createConnection} from 'typeorm';
-import validateEnv from "../utils/vaildateEnv";
+import validateEnv from "./utils/vaildateEnv";
 import UserController from "./Controllers/userController";
 import RoleController from "./Controllers/roleController";
 import AuthenticationController from "./authentication/authentication.controller";
 import BusinessPartnerController from "./Controllers/businessPartnerController";
 import {config, config_test} from "../ormconfig";
-import {connectToDatabase} from "../utils/DatabaseUtil/manageDatabaseConnection";
+import {connectToDatabase} from "./utils/DatabaseUtil/manageDatabaseConnection";
 validateEnv();
 
 

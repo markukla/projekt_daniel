@@ -1,7 +1,9 @@
-var PasswordValidator = require('password-validator');
-import WeekPasswordException from "../Exceptions/ToWeekPasswordException";
+import PasswordValidationResult from "./passwordValidationResult";
 
-function validatePassword(password:string) :string{
+var PasswordValidator = require('password-validator');
+import WeekPasswordException from "../../Exceptions/ToWeekPasswordException";
+
+function validatePassword(password:string) :PasswordValidationResult{
 
 
 var schema=new PasswordValidator();
@@ -14,14 +16,22 @@ schema
     .has().digits(2)                                // Must have at least 2 digits
     .has().not().spaces()                           // Should not have spaces
     .is().not().oneOf(['Passw0rd', 'Password123']);
+let validationResult:PasswordValidationResult;
 
 const isValid:boolean=schema.validate(password);
 if(isValid){
-    return password;
+    validationResult={
+        validatedPassword:password,
+
+    };
+    return validationResult;
 }
 else {
     const foultList:string[]=schema.validate(password,{list:true});
-    throw new WeekPasswordException(foultList)
+    validationResult={
+        foultList:foultList
+    };
+    return validationResult;
 }
 
 
