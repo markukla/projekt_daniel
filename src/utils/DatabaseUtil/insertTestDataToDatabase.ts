@@ -10,7 +10,7 @@ import {EntityManager} from "typeorm";
 
 
 const usersExampleForTests:UsersExampleForTests=new UsersExampleForTests();
-const users:User[]=[usersExampleForTests.activeAdminUserExample,usersExampleForTests.inactiveAdminUserExample,usersExampleForTests.activeEditorUserExample,usersExampleForTests.activePartnerUserExample,usersExampleForTests.inactivePartnerUserExample];
+const users:User[]=[usersExampleForTests.activeAdminUserExample,usersExampleForTests.inactiveAdminUserExample,usersExampleForTests.activeEditorUserExample,usersExampleForTests.activePartnerUserExample,usersExampleForTests.inactivePartnerUserExample,usersExampleForTests.inactiveEditorUserExample];
 const roles:Role[]=[new Role(RoleEnum.PARTNER),new Role(RoleEnum.EDITOR),new Role(RoleEnum.ADMIN)];
 
 async function insertTestUsersToDatabase(manager:EntityManager) {

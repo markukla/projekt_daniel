@@ -2,7 +2,7 @@ import { IsString } from 'class-validator';
 
 class ChangePasswordDto {
     @IsString()
-    public oldPassword: string;
+    public oldPassword?: string;
 
     @IsString()
     public newPassword: string;

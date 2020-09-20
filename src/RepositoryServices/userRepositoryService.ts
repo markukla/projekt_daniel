@@ -99,100 +99,96 @@ class UserService implements RepositoryService {
         const foundUser: User = await this.manager.findOne(User, id, {relations: ['roles']});
         if (!foundUser) {
             throw new UserNotFoundException(String(id));
+        }else if(foundUser){
+            if (this.UserHasPartnerRole(foundUser)===false) {
+                return foundUser;
+            } else {
+                throw new PrivilligedUserNotFoundException(String(id));
+            }
+
         }
-        // do not alllow to operate on partners in users endpoints
-        if (!this.UserHasPartnerRole(foundUser)) {
-            return foundUser;
-        } else {
-            throw new PrivilligedUserNotFoundException(String(id));
-        }
+
+
 
 
     }
 
     public updatePrivilegedUserWithoutPasssword = async (id: number, userData: UpdatePrivilegedUserWithouTPasswordDto): Promise<User> => {
-        let userToupdate: User = await this.findOnePrivilegedUserById(String(id));
-        if (!userToupdate) {
-            throw new UserNotFoundException(String(id));
+        let privilligedUserToupdate: User = await this.findOnePrivilegedUserById(String(id));
+        if(privilligedUserToupdate){
+            const userWithThisEmail: User =
+                await this.manager.findOne(User,
+                    {email: userData.email},
+                    {relations: ['roles']});
+
+
+            const otherUserWithThisEmailAlreadyExist: boolean = (userWithThisEmail && userWithThisEmail.id !== id);
+
+            if (otherUserWithThisEmailAlreadyExist) {
+                throw new UserWithThatEmailAlreadyExistsException(userData.email);
+            }
+
+
+            let createdRoles: Role[];
+            if (userData.isAdmin) {
+                createdRoles = [new Role(RoleEnum.ADMIN), new Role(RoleEnum.EDITOR)];
+            } else {
+                createdRoles = [new Role(RoleEnum.EDITOR)];
+            }
+
+            const user = {
+                ...userData,
+                roles: createdRoles,
+                id: id
+            };
+
+            await this.manager.save(User, user);
+            const updatedUser=await this.findOnePrivilegedUserById(String(id));
+            updatedUser.password=undefined;
+
+            return updatedUser;
+
 
         }
-        const userWiththisIdIsBusinessPartner: boolean = this.UserHasPartnerRole(userToupdate);
-        if (userWiththisIdIsBusinessPartner) {
-            throw new UserNotFoundException(String(id));
-        }
 
-
-// i use save for updating, becasue update method does not work with object related to other object with many to many relation, in this case users-and roles
-
-        // dont allow to change email to email which is asigned to other user or businessPartner, becasuse it make proper log in process imposssible
-        const userWithThisEmail: User =
-            await this.manager.findOne(User,
-                {email: userData.email},
-                {relations: ['roles']});
-
-
-        const otherUserWithThisEmailAlreadyExist: boolean = (userWithThisEmail && userWithThisEmail.id !== id);
-
-        if (otherUserWithThisEmailAlreadyExist) {
-            throw new UserWithThatEmailAlreadyExistsException(userData.email);
-        }
-
-
-        let createdRoles: Role[];
-        if (userData.isAdmin) {
-            createdRoles = [new Role(RoleEnum.ADMIN), new Role(RoleEnum.EDITOR)];
-        } else {
-            createdRoles = [new Role(RoleEnum.EDITOR)];
-        }
-
-        const user = {
-            ...userData,
-            roles: createdRoles,
-            id: id
-        };
-
-        await this.manager.save(User, user);
-
-
-        const updatedUser = await this.manager.findOne(User, id, {relations: ['roles']});
-        updatedUser.password = undefined;
-        return updatedUser;
 
     }
 
     public deletePrivilegedUserById = async (id: number) => {
-        const foundUser = await this.findOnePrivilegedUserById(String(id));
-        if (this.UserHasPartnerRole(foundUser)) { // dont allow to delete partners on user endpoint
-            throw new UserNotFoundException(String(id));
+        const foundPriviligedUser = await this.findOnePrivilegedUserById(String(id));
+        // dont allow to delete partners on user endpoint
+        if (foundPriviligedUser) {
+            const deleteResponse = await this.manager.delete(User, id);
+            return deleteResponse;
         }
 
-        const deleteResponse = await this.manager.delete(User, id);
-        return deleteResponse;
+
 
     }
     public changePrivilegedUserPasswordByAdmin = async (user: User, passwordData: ChangePasswordDto): Promise<User> => {
-        if (this.UserHasPartnerRole(user)) { // dont allow to change parter role on user endpoint
-            throw new UserNotFoundException(String(user.id));
-        }
-        let hashedPassword:string=null;
-        const validationResult= validatePassword(passwordData.newPassword);
+       const foundPrivilligedUser=await this.findOnePrivilegedUserById(String(user.id));
+       if(foundPrivilligedUser){
+
+           const validationResult= validatePassword(passwordData.newPassword);
 
 
-        if(validationResult.validatedPassword){ //
-            hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
-        }
-        else{
-            throw new WeekPasswordException(validationResult.foultList);
-        }
+           if(validationResult.validatedPassword){ //
+              let hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
+
+               const userToUpdatePassword=this.manager.create(User,{
+                   ...user,
+                   password:hashedPassword
+
+               });
+               const updatedUser=await this.manager.save(User, userToUpdatePassword);
+               return updatedUser;
+           }
+           else{
+               throw new WeekPasswordException(validationResult.foultList);
+           }
 
 
-            user.password = hashedPassword;
-            const updatedUser=await this.manager.save(User, user);
-            return updatedUser;
-
-
-
-
+       }
 
 
 
@@ -246,7 +242,7 @@ class UserService implements RepositoryService {
         if (foundUserIsPartner) {
             return foundUser;
         } else {
-            new BusinessPartnerNotFoundException(String(id));
+            throw new BusinessPartnerNotFoundException(String(id));
         }
 
 
@@ -351,7 +347,7 @@ class UserService implements RepositoryService {
         let isAdmin: boolean = false;
 
         user.roles.forEach(role => {
-            if (role.rolename === RoleEnum.EDITOR) {
+            if (role.rolename === RoleEnum.ADMIN) {
                 isAdmin = true;
 
             }
