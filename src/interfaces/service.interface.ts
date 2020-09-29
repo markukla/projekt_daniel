@@ -2,7 +2,8 @@ import {EntityManager, getRepository, Repository} from "typeorm";
 
 interface RepositoryService {
 
-    manager:EntityManager;
+    manager?:EntityManager;
+    repository:Repository<any>;
 
 
 }

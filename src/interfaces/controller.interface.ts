@@ -3,7 +3,7 @@ import RepositoryService from "./service.interface";
 interface Controller<T> {
     path: string;
     router: Router;
-    service:RepositoryService<T>;
+    service:RepositoryService;
 
 }
 

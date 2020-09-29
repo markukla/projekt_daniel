@@ -1,4 +1,4 @@
-import {EntityManager, getManager} from "typeorm";
+import {DeleteResult, EntityManager, getManager, getRepository} from "typeorm";
 import RepositoryService from "../interfaces/service.interface";
 import User from "../Models/Users/user.entity";
 import CreatePrivilegedUserDto from "../Models/Users/PrivilegedUsers/user.dto";
@@ -22,18 +22,23 @@ import PrivilligedUserNotFoundException from "../Exceptions/PrivilligedUserNotFo
 
 class UserService implements RepositoryService {
 
-    public manager:EntityManager = getManager();
+    public manager: EntityManager = getManager();
+    public repository=getRepository(User);
 
 
     // In this app privileged users are admins and editors. Editor can be changed to admin and admin to editor
 
 
     public async findUserByEmail(email: string): Promise<User> {
+
         const foundUser = await this.manager.findOne(User,
             {email: email},
             {relations: ['roles']});
 
-        return foundUser;
+            return foundUser;
+
+
+
 
 
     }
@@ -42,13 +47,12 @@ class UserService implements RepositoryService {
         if (await this.findUserByEmail(userData.email)) {
             throw new UserWithThatEmailAlreadyExistsException(userData.email);
         }
-        const validationResult:PasswordValidationResult= validatePassword(userData.password); // returns password if valid ot list of reason why password is not valid
+        const validationResult: PasswordValidationResult = validatePassword(userData.password); // 
 
-        let hashedPassword=null;
-        if(validationResult.validatedPassword){ //
-           hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
-        }
-        else{
+        let hashedPassword = null;
+        if (validationResult.validatedPassword) { //
+            hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
+        } else {
             throw new WeekPasswordException(validationResult.foultList);
         }
 
@@ -99,8 +103,8 @@ class UserService implements RepositoryService {
         const foundUser: User = await this.manager.findOne(User, id, {relations: ['roles']});
         if (!foundUser) {
             throw new UserNotFoundException(String(id));
-        }else if(foundUser){
-            if (this.UserHasPartnerRole(foundUser)===false) {
+        } else if (foundUser) {
+            if (!this.UserHasPartnerRole(foundUser)) {
                 return foundUser;
             } else {
                 throw new PrivilligedUserNotFoundException(String(id));
@@ -109,13 +113,11 @@ class UserService implements RepositoryService {
         }
 
 
-
-
     }
 
     public updatePrivilegedUserWithoutPasssword = async (id: number, userData: UpdatePrivilegedUserWithouTPasswordDto): Promise<User> => {
         let privilligedUserToupdate: User = await this.findOnePrivilegedUserById(String(id));
-        if(privilligedUserToupdate){
+        if (privilligedUserToupdate) {
             const userWithThisEmail: User =
                 await this.manager.findOne(User,
                     {email: userData.email},
@@ -143,8 +145,8 @@ class UserService implements RepositoryService {
             };
 
             await this.manager.save(User, user);
-            const updatedUser=await this.findOnePrivilegedUserById(String(id));
-            updatedUser.password=undefined;
+            const updatedUser = await this.findOnePrivilegedUserById(String(id));
+            updatedUser.password = undefined;
 
             return updatedUser;
 
@@ -154,65 +156,67 @@ class UserService implements RepositoryService {
 
     }
 
-    public deletePrivilegedUserById = async (id: number) => {
+    public deletePrivilegedUserById = async (id: number):DeleteResult => {
         const foundPriviligedUser = await this.findOnePrivilegedUserById(String(id));
         // dont allow to delete partners on user endpoint
         if (foundPriviligedUser) {
-            const deleteResponse = await this.manager.delete(User, id);
+            const deleteResponse:DeleteResult = await this.manager.delete(User, id);
             return deleteResponse;
         }
 
 
-
     }
     public changePrivilegedUserPasswordByAdmin = async (user: User, passwordData: ChangePasswordDto): Promise<User> => {
-       const foundPrivilligedUser=await this.findOnePrivilegedUserById(String(user.id));
-       if(foundPrivilligedUser){
+        const foundPrivilligedUser = await this.findOnePrivilegedUserById(String(user.id));
+        if (foundPrivilligedUser) {
 
-           const validationResult= validatePassword(passwordData.newPassword);
-
-
-           if(validationResult.validatedPassword){ //
-              let hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
-
-               const userToUpdatePassword=this.manager.create(User,{
-                   ...user,
-                   password:hashedPassword
-
-               });
-               const updatedUser=await this.manager.save(User, userToUpdatePassword);
-               return updatedUser;
-           }
-           else{
-               throw new WeekPasswordException(validationResult.foultList);
-           }
+            const validationResult = validatePassword(passwordData.newPassword);
 
 
-       }
+            if (validationResult.validatedPassword) { //
+                let hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
+
+                const userToUpdatePassword = this.manager.create(User, {
+                    ...user,
+                    password: hashedPassword
+
+                });
+                const updatedUser = await this.manager.save(User, userToUpdatePassword);
+                return updatedUser;
+            } else {
+                throw new WeekPasswordException(validationResult.foultList);
+            }
 
 
+        }
 
 
     }
 
     // business partners are app users with lowest priviliges.
     public async registerBusinessPartner(businessPartnerdata: CreateBusinessPartnerDto): Promise<User> {
-        if (this.findUserByEmail(businessPartnerdata.email)) {
+        if (await this.findUserByEmail(businessPartnerdata.email)) {
             throw new UserWithThatEmailAlreadyExistsException(businessPartnerdata.email);
         }
         const businesPartnerRoles: Role[] = [new Role(RoleEnum.PARTNER)];
-        const validatedPassword = validatePassword(businessPartnerdata.password);
-        const hashedPassword = await bcrypt.hash(validatedPassword, 10);
-        const businesPartner = this.manager.create(User, {
-            ...businessPartnerdata,
-            roles: businesPartnerRoles,
-            password: hashedPassword,
+        const validationResult:PasswordValidationResult = validatePassword(businessPartnerdata.password);
+        if(validationResult.validatedPassword){
+            const hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
+            const businesPartner = this.manager.create(User, {
+                ...businessPartnerdata,
+                roles: businesPartnerRoles,
+                password: hashedPassword,
 
-        });
-        await this.manager.save(businesPartner);
-        businesPartner.password = undefined;
+            });
+            await this.manager.save(businesPartner);
+            businesPartner.password = undefined;
 
-        return businesPartner;
+            return businesPartner;
+        }
+        else if(validationResult.foultList) {
+            throw new WeekPasswordException(validationResult.foultList)
+        }
+
     }
 
 
@@ -284,34 +288,40 @@ class UserService implements RepositoryService {
 
     }
 
-    public deletePartnerById = async (id: number) => {
+    public deletePartnerById = async (id: number):DeleteResult=> {
         const foundUser = await this.findOnePartnerById(String(id));
         if (!this.UserHasPartnerRole(foundUser)) {
             throw new BusinessPartnerNotFoundException(String(id));
         }
-        const deleteResponse = await this.manager.delete(User, id);
+        const deleteResponse:DeleteResult= await this.manager.delete(User, id);
         return deleteResponse;
 
     }
     public changePartnerPasswordByEditor = async (businessPartner: User, passwordData: ChangePasswordDto): Promise<User> => {
-        if (!this.UserHasPartnerRole(businessPartner)) {
-            throw new BusinessPartnerNotFoundException(String(businessPartner.id));
+        const foundPartnerdUser = await this.findOnePartnerById(String(businessPartner.id));
+        if (foundPartnerdUser) {
+
+            const validationResult:PasswordValidationResult = validatePassword(passwordData.newPassword);
+
+
+            if (validationResult.validatedPassword) { //
+                let hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
+
+                const businessPartnerToUpdatePassword = this.manager.create(User, {
+                    ...businessPartner,
+                    password: hashedPassword
+
+                });
+                const updatedPartner = await this.manager.save(User, businessPartnerToUpdatePassword);
+                return updatedPartner;
+            } else {
+                throw new WeekPasswordException(validationResult.foultList);
+            }
+
+
         }
-        let hashedPassword:string=null;
-        const validationResult= validatePassword(passwordData.newPassword);
 
 
-        if(validationResult.validatedPassword){ //
-            hashedPassword = await bcrypt.hash(validationResult.validatedPassword, 10);
-        }
-        else{
-            throw new WeekPasswordException(validationResult.foultList);
-        }
-
-
-        businessPartner.password = hashedPassword;
-        const updatedPartner=await this.manager.save(User, businessPartner);
-        return updatedPartner;
     }
 
 

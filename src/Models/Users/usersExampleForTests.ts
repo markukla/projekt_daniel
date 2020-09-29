@@ -5,6 +5,7 @@ import CreatePrivilegedUserDto from "./PrivilegedUsers/user.dto";
 import CreateBusinessPartnerDto from "./BusinessPartner/businessPartner.dto";
 import {IsBoolean, IsEmail, IsString} from "class-validator";
 import UpdatePrivilegedUserWithouTPasswordDto from "./PrivilegedUsers/modyfyUser.dto";
+import UpdateBussinessPartnerWithoutPassword from "./BusinessPartner/modyfyBusinessPartent.dto";
 
 class UsersExampleForTests {
     public hashedPassword: string = "$2b$10$fpooDkA4UaG/9nDsuuUmB.bIUJ7ittTknMl8nEMQ9o28UQPXqdZBC";
@@ -95,7 +96,7 @@ class UsersExampleForTests {
 
         "fulName": 'Jan Kowalski',
         "email": 'kowalski@gmail.com',
-        "password": "Nicram12",
+        "password": "Nicram1234",
         "active": true,
         "code": "POL1",
         "businesPartnerCompanyName": "Polpharma",
@@ -106,6 +107,13 @@ class UsersExampleForTests {
         "email": 'updated@gmail.com',
         "active": true,
         "isAdmin": true
+    }
+    public updatePartnerDto:UpdateBussinessPartnerWithoutPassword={
+        "fulName": 'updated fullName',
+        "email": 'updated@gmail.com',
+        "active": true,
+        "code": "updateDcode",
+        "businesPartnerCompanyName": "updatedCompanyName"
     }
 
 }
