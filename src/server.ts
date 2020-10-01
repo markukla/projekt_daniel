@@ -11,6 +11,7 @@ import AuthenticationController from "./authentication/authentication.controller
 import BusinessPartnerController from "./Controllers/businessPartnerController";
 import {config, config_test} from "../ormconfig";
 import {connectToDatabase} from "./utils/DatabaseUtil/manageDatabaseConnection";
+import MaterialController from "./Controllers/materialController";
 validateEnv();
 
 
@@ -29,7 +30,9 @@ validateEnv();
             new AuthenticationController(),
             new PostsController(),
             new UserController(),
-            new BusinessPartnerController()
+            new BusinessPartnerController(),
+            new MaterialController()
+
         ],
     );
     app.listen();

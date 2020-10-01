@@ -15,10 +15,12 @@ import NotActiveException from "../Exceptions/NotActiveException";
 import WrongCredentialsException from "../Exceptions/WrongCredentialsException";
 import validatePassword from "../utils/validatePassword/validate.password";
 import WeekPasswordException from "../Exceptions/ToWeekPasswordException";
+import RepositoryService from "../interfaces/service.interface";
 
 
-class AuthenticationService {
-    private manager = getManager();
+class AuthenticationService implements RepositoryService{
+    public manager = getManager();
+    public repository=getRepository(User);
 
     public async login(logInData: LogInDto): Promise<LoggedUser> {
         var loggedUser: LoggedUser;

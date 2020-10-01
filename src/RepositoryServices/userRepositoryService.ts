@@ -156,7 +156,7 @@ class UserService implements RepositoryService {
 
     }
 
-    public deletePrivilegedUserById = async (id: number):DeleteResult => {
+    public deletePrivilegedUserById = async (id: number):Promise<DeleteResult> => {
         const foundPriviligedUser = await this.findOnePrivilegedUserById(String(id));
         // dont allow to delete partners on user endpoint
         if (foundPriviligedUser) {
@@ -288,7 +288,7 @@ class UserService implements RepositoryService {
 
     }
 
-    public deletePartnerById = async (id: number):DeleteResult=> {
+    public deletePartnerById = async (id: number):Promise<DeleteResult> => {
         const foundUser = await this.findOnePartnerById(String(id));
         if (!this.UserHasPartnerRole(foundUser)) {
             throw new BusinessPartnerNotFoundException(String(id));

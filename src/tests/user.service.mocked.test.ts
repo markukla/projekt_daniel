@@ -1,5 +1,5 @@
 import * as typeorm from "typeorm";
-import UsersExampleForTests from "../Models/Users/usersExampleForTests";
+import UsersExampleForTests from "./usersExampleForTests";
 import CreatePrivilegedUserDto from "../Models/Users/PrivilegedUsers/user.dto";
 import UserService from "../RepositoryServices/userRepositoryService";
 import UserWithThatEmailAlreadyExistsException from "../Exceptions/UserWithThatEmailAlreadyExistsException";

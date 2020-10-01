@@ -1,11 +1,11 @@
-import Role from "../Role/role.entity";
-import RoleEnum from "../Role/role.enum";
-import User from "./user.entity";
-import CreatePrivilegedUserDto from "./PrivilegedUsers/user.dto";
-import CreateBusinessPartnerDto from "./BusinessPartner/businessPartner.dto";
+import Role from "../Models/Role/role.entity";
+import RoleEnum from "../Models/Role/role.enum";
+import User from "../Models/Users/user.entity";
+import CreatePrivilegedUserDto from "../Models/Users/PrivilegedUsers/user.dto";
+import CreateBusinessPartnerDto from "../Models/Users/BusinessPartner/businessPartner.dto";
 import {IsBoolean, IsEmail, IsString} from "class-validator";
-import UpdatePrivilegedUserWithouTPasswordDto from "./PrivilegedUsers/modyfyUser.dto";
-import UpdateBussinessPartnerWithoutPassword from "./BusinessPartner/modyfyBusinessPartent.dto";
+import UpdatePrivilegedUserWithouTPasswordDto from "../Models/Users/PrivilegedUsers/modyfyUser.dto";
+import UpdateBussinessPartnerWithoutPassword from "../Models/Users/BusinessPartner/modyfyBusinessPartent.dto";
 
 class UsersExampleForTests {
     public hashedPassword: string = "$2b$10$fpooDkA4UaG/9nDsuuUmB.bIUJ7ittTknMl8nEMQ9o28UQPXqdZBC";

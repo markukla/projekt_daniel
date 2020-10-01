@@ -11,7 +11,7 @@ import RoleEnum from "../Models/Role/role.enum";
 import WrongCredentialsException from "../Exceptions/WrongCredentialsException";
 import {getManager} from "typeorm";
 import * as bcrypt from 'bcrypt';
-import UsersExampleForTests from "../Models/Users/usersExampleForTests";
+import UsersExampleForTests from "./usersExampleForTests";
 import ChangePasswordDto from "../authentication/changePassword.dto";
 import IncorrectPaswordException from "../Exceptions/IncorrectPaswordException";
 

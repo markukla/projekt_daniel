@@ -3,7 +3,7 @@ import 'es6-shim';
 import 'dotenv/config';
 import {createConnection, getManager} from "typeorm";
 import {insertRolesToDatabase, insertTestUsersToDatabase} from "../utils/DatabaseUtil/insertTestDataToDatabase";
-import UsersExampleForTests from "../Models/Users/usersExampleForTests";
+import UsersExampleForTests from "./usersExampleForTests";
 import UserService from "../RepositoryServices/userRepositoryService";
 import UserWithThatEmailAlreadyExistsException from "../Exceptions/UserWithThatEmailAlreadyExistsException";
 import {

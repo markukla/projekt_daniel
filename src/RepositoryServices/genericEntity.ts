@@ -1,8 +1,6 @@
-import {BaseEntity} from "typeorm";
+import {BaseEntity, Entity} from "typeorm";
 
 class GenericEntity<T> extends BaseEntity{
-
-
 
 
 }
