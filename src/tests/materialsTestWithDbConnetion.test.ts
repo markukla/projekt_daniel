@@ -159,5 +159,29 @@ describe('MaterialService', () => {
         });
     })
 
+    describe('when deleteMaterialById', () => {
+        describe('when material with given id does not exist',()=>{
+            it('should thrown an error ', async () => {
+                const materialService: MaterialService = new MaterialService();
+                const unreachableId:string=String(500);
+
+                await expect(materialService.deleteMaterialById(unreachableId)).rejects.toMatchObject(new MaterialNotFoundExceptionn(unreachableId,null,null));
+            });
+        });
+        describe('when material with given id exists',()=>{
+            it('should no thrown an error, and delete an record ', async () => {
+                const materialService: MaterialService = new MaterialService();
+                const reachableId:string=String(3);
+                let numberOfDeletedRows:number;
+                await materialService.deleteMaterialById(reachableId).then(result=>{
+                    numberOfDeletedRows=result.affected;
+                });
+
+                await expect(numberOfDeletedRows).toBe(1);
+            });
+        });
+
+    });
+
 
 });

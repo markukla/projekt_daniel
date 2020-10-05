@@ -33,14 +33,9 @@ beforeAll(async () => {
 
 
     await connectToDatabase(config_test);
-    const manager = getManager();
-    if (manager.connection.isConnected) {
 
-        await insertRolesToDatabase(manager);
-        await insertTestUsersToDatabase(manager);
-
-
-    }
+    await insertRolesToDatabase();
+    await insertTestUsersToDatabase();
 
 
 });
@@ -53,18 +48,18 @@ afterAll(async () => {
 
 
 describe('user service', () => {
-    describe('find user by email',()=>{
+    describe('find user by email', () => {
         it('should resolve undefinded if user not found', async function () {
-            const userService= new UserService();
-            const usersStubs=new UsersExampleForTests();
-            const unreachableEmail='niematakiegomaila@gmail.com';
+            const userService = new UserService();
+            const usersStubs = new UsersExampleForTests();
+            const unreachableEmail = 'niematakiegomaila@gmail.com';
             await expect(userService.findUserByEmail(unreachableEmail)).resolves.toBeUndefined();
 
         });
         it('should not throw error end resolve if user found', async function () {
-            const userService= new UserService();
-            const usersStubs=new UsersExampleForTests();
-            const reachableEmail=usersStubs.activeAdminUserExample.email;
+            const userService = new UserService();
+            const usersStubs = new UsersExampleForTests();
+            const reachableEmail = usersStubs.activeAdminUserExample.email;
             await expect(userService.findUserByEmail(reachableEmail)).resolves.toMatchObject(usersStubs.activeAdminUserExample);
 
         });
@@ -104,7 +99,7 @@ describe('user service', () => {
                 const userService = new UserService();
 
                 const savedUser: User = await userService.registerPrivilegedUser(notExistingEditorUserDTO);
-                if(savedUser){
+                if (savedUser) {
                     console.log(savedUser);
                 }
 
@@ -206,7 +201,7 @@ describe('user service', () => {
             it('should throw an error: Privilliged user with this id does not exist', async () => {
                 const userService = new UserService();
 
-                const userStabs=new UsersExampleForTests();
+                const userStabs = new UsersExampleForTests();
 
                 const partnerId: string = String(userStabs.activePartnerUserExample.id);
                 await expect(userService.findOnePrivilegedUserById(partnerId)).rejects.toMatchObject(new PrivilligedUserNotFoundException(partnerId));
@@ -217,7 +212,7 @@ describe('user service', () => {
 
                 const userService = new UserService();
 
-                const userStabs=new UsersExampleForTests();
+                const userStabs = new UsersExampleForTests();
 
                 const privilligedUserId: string = String(userStabs.activeEditorUserExample.id)
                 await expect(userService.findOnePrivilegedUserById(privilligedUserId)).resolves.toBeDefined();
@@ -251,7 +246,7 @@ describe('user service', () => {
                 const userService = new UserService();
 
                 const usersStabs = new UsersExampleForTests();
-                const priviligedUserId =usersStabs.activeAdminUserExample.id; //1
+                const priviligedUserId = usersStabs.activeAdminUserExample.id; //1
 
                 const updatePrivilegedUserWithouTPasswordDto: UpdatePrivilegedUserWithouTPasswordDto = {
                     ...usersStabs.updatePrivilligedUserDto,
@@ -268,7 +263,7 @@ describe('user service', () => {
             it('no error thrown, updated executed', async () => {
                 const userService = new UserService();
                 const usersStabs = new UsersExampleForTests();
-                const priviligedUserId =usersStabs.activeAdminUserExample.id; //1
+                const priviligedUserId = usersStabs.activeAdminUserExample.id; //1
 
                 const emailofUserofId1 = usersStabs.activeAdminUserExample.email;
                 const updatePrivilegedUserWithouTPasswordDto: UpdatePrivilegedUserWithouTPasswordDto = {
@@ -287,7 +282,7 @@ describe('user service', () => {
             it('should delete admin role, and still contain editor role', async () => {
                 const userService = new UserService();
                 const usersStabs = new UsersExampleForTests();
-                const privilligedUserId=usersStabs.activeAdminUserExample.id; //1
+                const privilligedUserId = usersStabs.activeAdminUserExample.id; //1
                 const updatePrivilegedUserWithouTPasswordDto: UpdatePrivilegedUserWithouTPasswordDto = {
                     ...usersStabs.updatePrivilligedUserDto,
                     isAdmin: false
@@ -295,7 +290,7 @@ describe('user service', () => {
 
                 };
                 const updatedUser = await userService.updatePrivilegedUserWithoutPasssword(privilligedUserId, updatePrivilegedUserWithouTPasswordDto);
-                if(updatedUser){
+                if (updatedUser) {
                     console.log(updatedUser);
                 }
                 const isEditorButNotAdmin: boolean = userService.UserHasEditorRoleButIsNotAdmin(updatedUser);
@@ -307,7 +302,7 @@ describe('user service', () => {
                 const userService = new UserService();
 
                 const usersStabs = new UsersExampleForTests();
-                const privilligedUserId=usersStabs.activeAdminUserExample.id; //1
+                const privilligedUserId = usersStabs.activeAdminUserExample.id; //1
                 const updatePrivilegedUserWithouTPasswordDto: UpdatePrivilegedUserWithouTPasswordDto = {
                     ...usersStabs.updatePrivilligedUserDto,
                     isAdmin: true
@@ -315,17 +310,17 @@ describe('user service', () => {
 
                 };
                 const updatedUser = await userService.updatePrivilegedUserWithoutPasssword(privilligedUserId, updatePrivilegedUserWithouTPasswordDto);
-                if(updatedUser){
+                if (updatedUser) {
                     console.log(updatedUser);
                 }
-                const isAdmin: boolean = userService.UserHasAdminRole(updatedUser)&&userService.UserHasEditorRole(updatedUser);
+                const isAdmin: boolean = userService.UserHasAdminRole(updatedUser) && userService.UserHasEditorRole(updatedUser);
                 await expect(isAdmin).toBe(true);
             });
         })
-        describe('when user is not privilliged user but partner',()=>{
-            it('should throw an eror: privilliged user with id not found ',async ()=>{
+        describe('when user is not privilliged user but partner', () => {
+            it('should throw an eror: privilliged user with id not found ', async () => {
                 const userService = new UserService();
-                const idOfPartnerWhichIsNotPrivilligedUser=5;
+                const idOfPartnerWhichIsNotPrivilligedUser = 5;
 
                 const usersStabs = new UsersExampleForTests();
                 const updatePrivilegedUserWithouTPasswordDto: UpdatePrivilegedUserWithouTPasswordDto = {
@@ -334,7 +329,7 @@ describe('user service', () => {
 
 
                 };
-                await expect  (userService.updatePrivilegedUserWithoutPasssword(idOfPartnerWhichIsNotPrivilligedUser, updatePrivilegedUserWithouTPasswordDto)).rejects.toMatchObject(new PrivilligedUserNotFoundException(String(idOfPartnerWhichIsNotPrivilligedUser)));
+                await expect(userService.updatePrivilegedUserWithoutPasssword(idOfPartnerWhichIsNotPrivilligedUser, updatePrivilegedUserWithouTPasswordDto)).rejects.toMatchObject(new PrivilligedUserNotFoundException(String(idOfPartnerWhichIsNotPrivilligedUser)));
 
 
             });
@@ -343,9 +338,9 @@ describe('user service', () => {
 
     });
 
-    describe('changePrivilegedUserPasswordByAdmin',()=>{
-        describe('it shoud not allow to change partner password',()=>{
-            it('should throw error:PrivilligedUserNotFound',async ()=>{
+    describe('changePrivilegedUserPasswordByAdmin', () => {
+        describe('it shoud not allow to change partner password', () => {
+            it('should throw error:PrivilligedUserNotFound', async () => {
                 const userService = new UserService();
 
 
@@ -354,17 +349,17 @@ describe('user service', () => {
                     ...usersStabs.activePartnerUserExample
 
                 };
-                const passwordData:ChangePasswordDto={
-                    newPassword:'Nicram12345'
+                const passwordData: ChangePasswordDto = {
+                    newPassword: 'Nicram12345'
                 };
 
-                await expect(userService.changePrivilegedUserPasswordByAdmin(invalidPrivilegedUserToUpdatePassword,passwordData)).rejects.toMatchObject(new PrivilligedUserNotFoundException(String(invalidPrivilegedUserToUpdatePassword.id)));
+                await expect(userService.changePrivilegedUserPasswordByAdmin(invalidPrivilegedUserToUpdatePassword, passwordData)).rejects.toMatchObject(new PrivilligedUserNotFoundException(String(invalidPrivilegedUserToUpdatePassword.id)));
             });
 
 
         });
-        describe('it shoud not allow to change password if passsword is to week',()=>{
-            it('should throw error:Week Password Exception',async ()=>{
+        describe('it shoud not allow to change password if passsword is to week', () => {
+            it('should throw error:Week Password Exception', async () => {
                 const userService = new UserService();
 
 
@@ -373,18 +368,18 @@ describe('user service', () => {
                     ...usersStabs.activeEditorUserExample
 
                 };
-                const passwordData:ChangePasswordDto={
-                    newPassword:'ner'
+                const passwordData: ChangePasswordDto = {
+                    newPassword: 'ner'
                 };
-                const foultList:string[]=validatePassword(passwordData.newPassword).foultList;
+                const foultList: string[] = validatePassword(passwordData.newPassword).foultList;
 
-                await expect(userService.changePrivilegedUserPasswordByAdmin(validPrivilegedUserToUpdatePassword,passwordData)).rejects.toMatchObject(new WeekPasswordException(foultList));
+                await expect(userService.changePrivilegedUserPasswordByAdmin(validPrivilegedUserToUpdatePassword, passwordData)).rejects.toMatchObject(new WeekPasswordException(foultList));
             });
 
 
         });
-        describe('it shoud  allow to change password if priviliged user and strong password',()=>{
-            it('should change password without error',async ()=>{
+        describe('it shoud  allow to change password if priviliged user and strong password', () => {
+            it('should change password without error', async () => {
                 const userService = new UserService();
 
 
@@ -393,26 +388,25 @@ describe('user service', () => {
                     ...usersStabs.activeEditorUserExample
 
                 };
-                const passwordData:ChangePasswordDto={
-                    newPassword:'Nicramnk12'
+                const passwordData: ChangePasswordDto = {
+                    newPassword: 'Nicramnk12'
                 };
 
-                const hased1NewPassword=await bcrypt.hash(passwordData.newPassword,10);
-                if(hased1NewPassword){
+                const hased1NewPassword = await bcrypt.hash(passwordData.newPassword, 10);
+                if (hased1NewPassword) {
                     console.log(`hased1NewPassword=${hased1NewPassword}`);
                 }
-                const hased2NewPassword=await bcrypt.hash(passwordData.newPassword,10);
-                if(hased2NewPassword){
+                const hased2NewPassword = await bcrypt.hash(passwordData.newPassword, 10);
+                if (hased2NewPassword) {
                     console.log(`hased2NewPassword=${hased2NewPassword}`);
                 }
 
 
-             const savedUserWithNewPassword=  await userService.changePrivilegedUserPasswordByAdmin(validPrivilegedUserToUpdatePassword,passwordData);
-               if(savedUserWithNewPassword){
+                const savedUserWithNewPassword = await userService.changePrivilegedUserPasswordByAdmin(validPrivilegedUserToUpdatePassword, passwordData);
+                if (savedUserWithNewPassword) {
 
-                   await expect(bcrypt.compare(passwordData.newPassword,savedUserWithNewPassword.password)).resolves.toBe(true);
-                   }
-
+                    await expect(bcrypt.compare(passwordData.newPassword, savedUserWithNewPassword.password)).resolves.toBe(true);
+                }
 
 
             });
@@ -421,8 +415,8 @@ describe('user service', () => {
         })
 
     });
-    describe('deletePrivilegedUserById',  ()=> {
-        describe('When not privilled user',  ()=> {
+    describe('deletePrivilegedUserById', () => {
+        describe('When not privilled user', () => {
             it('should not delete and throw error:No privillage user', async function () {
 
                 const userService = new UserService();
@@ -441,7 +435,7 @@ describe('user service', () => {
 
         });
 
-        describe('When privilled user',  ()=> {
+        describe('When privilled user', () => {
             it('should succesfully delete', async function () {
 
                 const userService = new UserService();
@@ -464,18 +458,18 @@ describe('user service', () => {
 
     // businesss partners tests
 
-    describe('find user by email',()=>{
+    describe('find user by email', () => {
         it('should resolve undefinded if user not found', async function () {
-            const userService= new UserService();
-            const usersStubs=new UsersExampleForTests();
-            const unreachableEmail='niematakiegomaila@gmail.com';
+            const userService = new UserService();
+            const usersStubs = new UsersExampleForTests();
+            const unreachableEmail = 'niematakiegomaila@gmail.com';
             await expect(userService.findUserByEmail(unreachableEmail)).resolves.toBeUndefined();
 
         });
         it('should not throw error end resolve if user found', async function () {
-            const userService= new UserService();
-            const usersStubs=new UsersExampleForTests();
-            const reachableEmail=usersStubs.activePartnerUserExample.email;
+            const userService = new UserService();
+            const usersStubs = new UsersExampleForTests();
+            const reachableEmail = usersStubs.activePartnerUserExample.email;
             await expect(userService.findUserByEmail(reachableEmail)).resolves.toMatchObject(usersStubs.activePartnerUserExample);
 
         });
@@ -487,11 +481,10 @@ describe('user service', () => {
         const userexamples = new UsersExampleForTests();
         const examplePartnerDto: CreateBusinessPartnerDto = {
             ...userexamples.createPartnerDto,
-            email:userexamples.activePartnerUserExample.email
+            email: userexamples.activePartnerUserExample.email
         };
 
         describe('when user email already exist in database', () => {
-
 
 
             it('it shoud  throw user already exist error', async () => {
@@ -513,17 +506,17 @@ describe('user service', () => {
 
                 const notExistingPartnerUserDTO = {
                     ...userStabs.createPartnerDto,
-                    email:'notklfmsfksdl20@gmail.com'
+                    email: 'notklfmsfksdl20@gmail.com'
                 };
 
                 const userService = new UserService();
 
                 const savedPartner: User = await userService.registerBusinessPartner(notExistingPartnerUserDTO);
-                if(savedPartner){
+                if (savedPartner) {
                     console.log(savedPartner);
                 }
 
-                const isPartner:boolean = userService.UserHasPartnerRole(savedPartner);
+                const isPartner: boolean = userService.UserHasPartnerRole(savedPartner);
                 await expect(isPartner).toBe(true);
 
 
@@ -543,7 +536,7 @@ describe('user service', () => {
                     password: "weak"
                 };
                 const userService = new UserService();
-                const validationResult:PasswordValidationResult = validatePassword(notExistingInDatabasePartnerDto.password);
+                const validationResult: PasswordValidationResult = validatePassword(notExistingInDatabasePartnerDto.password);
                 const foultList: string[] = validationResult.foultList;
 
                 await expect(userService.registerBusinessPartner(notExistingInDatabasePartnerDto)).rejects.toMatchObject(new WeekPasswordException(foultList));
@@ -565,7 +558,7 @@ describe('user service', () => {
 
                 partnersUsers.forEach(user => {
 
-                    if (userService.UserHasAdminRole(user)||userService.UserHasEditorRole(user)) {
+                    if (userService.UserHasAdminRole(user) || userService.UserHasEditorRole(user)) {
                         console.log(user);
 
                         hasOnlyPartnerRole = false;
@@ -605,7 +598,7 @@ describe('user service', () => {
             it('should throw an error: Privilliged user with this id does not exist', async () => {
                 const userService = new UserService();
 
-                const userStabs=new UsersExampleForTests();
+                const userStabs = new UsersExampleForTests();
 
                 const adminId: string = String(userStabs.activeAdminUserExample.id);
                 await expect(userService.findOnePartnerById(adminId)).rejects.toMatchObject(new BusinessPartnerNotFoundException(adminId));
@@ -616,7 +609,7 @@ describe('user service', () => {
 
                 const userService = new UserService();
 
-                const userStabs=new UsersExampleForTests();
+                const userStabs = new UsersExampleForTests();
 
                 const partnerUserId: string = String(userStabs.inactivePartnerUserExample.id)
                 await expect(userService.findOnePartnerById(partnerUserId)).resolves.toBeDefined();
@@ -650,11 +643,11 @@ describe('user service', () => {
                 const userService = new UserService();
 
                 const usersStabs = new UsersExampleForTests();
-                const PartnerUserId =usersStabs.activePartnerUserExample.id; //1
+                const PartnerUserId = usersStabs.activePartnerUserExample.id; //1
 
                 const updatePartnerDto: UpdateBussinessPartnerWithoutPassword = {
                     ...usersStabs.updatePartnerDto,
-                    email:'kjdjfd@gmail.com'
+                    email: 'kjdjfd@gmail.com'
 
 
                 };
@@ -668,7 +661,7 @@ describe('user service', () => {
             it('no error thrown, updated executed', async () => {
                 const userService = new UserService();
                 const usersStabs = new UsersExampleForTests();
-                const savedPartnerId =usersStabs.activePartnerUserExample.id; //1
+                const savedPartnerId = usersStabs.activePartnerUserExample.id; //1
 
                 const emailofPartnerSavedinDatabase = usersStabs.activePartnerUserExample.email;
                 const updatedPartnerDto: UpdateBussinessPartnerWithoutPassword = {
@@ -684,19 +677,19 @@ describe('user service', () => {
         });
 
 
-        describe('when  user is not business Partner but privilliged User',()=>{
-            it('should throw an eror: Business partner with id not found ',async ()=>{
+        describe('when  user is not business Partner but privilliged User', () => {
+            it('should throw an eror: Business partner with id not found ', async () => {
                 const userService = new UserService();
                 const usersStabs = new UsersExampleForTests();
-                const idOfUserWhichIsnotBusinessPartner=usersStabs.activeAdminUserExample.id;
+                const idOfUserWhichIsnotBusinessPartner = usersStabs.activeAdminUserExample.id;
 
 
                 const updatePartnerDto: UpdateBussinessPartnerWithoutPassword = {
                     ...usersStabs.updatePartnerDto,
-                    email:"newPartneremial@gmial.com"
+                    email: "newPartneremial@gmial.com"
 
                 };
-                await expect  (userService.updatePartnerById(idOfUserWhichIsnotBusinessPartner, updatePartnerDto)).rejects.toMatchObject(new BusinessPartnerNotFoundException(String(idOfUserWhichIsnotBusinessPartner)));
+                await expect(userService.updatePartnerById(idOfUserWhichIsnotBusinessPartner, updatePartnerDto)).rejects.toMatchObject(new BusinessPartnerNotFoundException(String(idOfUserWhichIsnotBusinessPartner)));
 
 
             });
@@ -705,9 +698,9 @@ describe('user service', () => {
 
     });
 
-    describe('changeBusinessPartnerPasswordByEditor',()=>{
-        describe('when user is  privilliged User ',()=>{
-            it('it should throw error:PrivilligedUserNotFound, and do not allow to change Password',async ()=>{
+    describe('changeBusinessPartnerPasswordByEditor', () => {
+        describe('when user is  privilliged User ', () => {
+            it('it should throw error:PrivilligedUserNotFound, and do not allow to change Password', async () => {
                 const userService = new UserService();
 
 
@@ -716,17 +709,17 @@ describe('user service', () => {
                     ...usersStabs.activeAdminUserExample
 
                 };
-                const passwordData:ChangePasswordDto={
-                    newPassword:'Nicram12345'
+                const passwordData: ChangePasswordDto = {
+                    newPassword: 'Nicram12345'
                 };
 
-                await expect(userService.changePartnerPasswordByEditor(invalidPartnerUserToUpdatePassowrd,passwordData)).rejects.toMatchObject(new BusinessPartnerNotFoundException(String(invalidPartnerUserToUpdatePassowrd.id)));
+                await expect(userService.changePartnerPasswordByEditor(invalidPartnerUserToUpdatePassowrd, passwordData)).rejects.toMatchObject(new BusinessPartnerNotFoundException(String(invalidPartnerUserToUpdatePassowrd.id)));
             });
 
 
         });
-        describe('when passsword is to week',()=>{
-            it('should throw error:Week Password Exception and do not allow to change passowrd',async ()=>{
+        describe('when passsword is to week', () => {
+            it('should throw error:Week Password Exception and do not allow to change passowrd', async () => {
                 const userService = new UserService();
 
 
@@ -735,18 +728,18 @@ describe('user service', () => {
                     ...usersStabs.activePartnerUserExample
 
                 };
-                const passwordData:ChangePasswordDto={
-                    newPassword:'ner'
+                const passwordData: ChangePasswordDto = {
+                    newPassword: 'ner'
                 };
-                const foultList:string[]=validatePassword(passwordData.newPassword).foultList;
+                const foultList: string[] = validatePassword(passwordData.newPassword).foultList;
 
-                await expect(userService.changePartnerPasswordByEditor(validPartnerUserToUpdatePassword,passwordData)).rejects.toMatchObject(new WeekPasswordException(foultList));
+                await expect(userService.changePartnerPasswordByEditor(validPartnerUserToUpdatePassword, passwordData)).rejects.toMatchObject(new WeekPasswordException(foultList));
             });
 
 
         });
-        describe('when partner user and strong password',()=>{
-            it('should change password without error',async ()=>{
+        describe('when partner user and strong password', () => {
+            it('should change password without error', async () => {
                 const userService = new UserService();
 
 
@@ -755,26 +748,25 @@ describe('user service', () => {
                     ...usersStabs.activePartnerUserExample
 
                 };
-                const passwordData:ChangePasswordDto={
-                    newPassword:'Nicramnk12'
+                const passwordData: ChangePasswordDto = {
+                    newPassword: 'Nicramnk12'
                 };
 
-                const hased1NewPassword=await bcrypt.hash(passwordData.newPassword,10);
-                if(hased1NewPassword){
+                const hased1NewPassword = await bcrypt.hash(passwordData.newPassword, 10);
+                if (hased1NewPassword) {
                     console.log(`hased1NewPassword=${hased1NewPassword}`);
                 }
-                const hased2NewPassword=await bcrypt.hash(passwordData.newPassword,10);
-                if(hased2NewPassword){
+                const hased2NewPassword = await bcrypt.hash(passwordData.newPassword, 10);
+                if (hased2NewPassword) {
                     console.log(`hased2NewPassword=${hased2NewPassword}`);
                 }
 
 
-                const savedPartnerWithNewPassword=  await userService.changePartnerPasswordByEditor(validPartnerUserToUpdatePassword,passwordData);
-                if(savedPartnerWithNewPassword){
+                const savedPartnerWithNewPassword = await userService.changePartnerPasswordByEditor(validPartnerUserToUpdatePassword, passwordData);
+                if (savedPartnerWithNewPassword) {
 
-                    await expect(bcrypt.compare(passwordData.newPassword,savedPartnerWithNewPassword.password)).resolves.toBe(true);
+                    await expect(bcrypt.compare(passwordData.newPassword, savedPartnerWithNewPassword.password)).resolves.toBe(true);
                 }
-
 
 
             });
@@ -783,8 +775,8 @@ describe('user service', () => {
         })
 
     });
-    describe('deletePartnerById',  ()=> {
-        describe('When not business partner',  ()=> {
+    describe('deletePartnerById', () => {
+        describe('When not business partner', () => {
             it('should not delete and throw error:No Business partner', async function () {
 
                 const userService = new UserService();
@@ -803,7 +795,7 @@ describe('user service', () => {
 
         });
 
-        describe('When partner user',  ()=> {
+        describe('When partner user', () => {
             it('should succesfully delete', async function () {
 
                 const userService = new UserService();
@@ -823,8 +815,6 @@ describe('user service', () => {
         })
 
     });
-
-
 
 
 });
