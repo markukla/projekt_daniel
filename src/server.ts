@@ -12,6 +12,7 @@ import BusinessPartnerController from "./Controllers/businessPartnerController";
 import {config, config_test} from "../ormconfig";
 import {connectToDatabase} from "./utils/DatabaseUtil/manageDatabaseConnection";
 import MaterialController from "./Controllers/materialController";
+import ProductController from "./Controllers/productController";
 validateEnv();
 
 
@@ -31,7 +32,8 @@ validateEnv();
             new PostsController(),
             new UserController(),
             new BusinessPartnerController(),
-            new MaterialController()
+            new MaterialController(),
+            new ProductController()
 
         ],
     );
