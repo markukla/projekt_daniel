@@ -1,8 +1,8 @@
+
 import App from './app';
 import PostsController from "./Controllers/postController";
 import 'dotenv/config';
 import 'reflect-metadata';
-
 import {createConnection} from 'typeorm';
 import validateEnv from "./utils/vaildateEnv";
 import UserController from "./Controllers/userController";
@@ -13,6 +13,7 @@ import {config, config_test} from "../ormconfig";
 import {connectToDatabase} from "./utils/DatabaseUtil/manageDatabaseConnection";
 import MaterialController from "./Controllers/materialController";
 import ProductController from "./Controllers/productController";
+import DrawingUploadController from "./Controllers/drawingUploadController";
 validateEnv();
 
 
@@ -33,7 +34,8 @@ validateEnv();
             new UserController(),
             new BusinessPartnerController(),
             new MaterialController(),
-            new ProductController()
+            new ProductController(),
+            new DrawingUploadController()
 
         ],
     );

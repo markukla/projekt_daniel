@@ -11,7 +11,7 @@ import editorAuthorizationMiddleware from "../middleware/editorAuthorizationMidd
 import authMiddleware from "../middleware/auth.middleware";
 
 
-class PostsController implements Controller<Post>{
+class PostsController implements Controller{
     public path = '/posts';
     public router = express.Router();
    public  service=new PostService();

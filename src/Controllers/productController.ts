@@ -16,23 +16,43 @@ import Product from "../Models/Products/product.entity";
 import ProductService from "../RepositoryServices/productRepositoryService";
 import CreateProductDto from "../Models/Products/product.dto";
 import ProductNotFoundExceptionn from "../Exceptions/ProductNotFoundException";
+import * as multer from "multer";
+import * as fs from "fs";
+const path = require('path');
 
 
 
-class ProductController implements Controller<Product>{
+class ProductController implements Controller{
     public path = '/products';
     public router = express.Router();
     public  service:ProductService=new ProductService();
+    public upload = multer({
+        dest: "../../public/images"
+        // you might also want to set some limits: https://github.com/expressjs/multer#limits
+
+    });
+
     constructor() {
         this.initializeRoutes();
     }
+    private handleError=(err:Error, res:express.Response) => {
+        res
+            .status(500)
+            .contentType("text/plain")
+            .end("Oops! Something went wrong!");
+    };
+
+
 
     private initializeRoutes() {
         this.router.get(this.path, authMiddleware,adminAuthorizationMiddleware,this.getAllProducts);
+
         this.router.get(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.getOneProductById);
         this.router.patch(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(CreateProductDto, true), this.updateProductById);
         this.router.delete(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.deleteOneProductById);
         this.router.post(this.path,authMiddleware,adminAuthorizationMiddleware,validationMiddleware(CreateProductDto), this.addOneProduct);
+
+
     }
 
     private addOneProduct = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -119,10 +139,15 @@ class ProductController implements Controller<Product>{
 
     }
 
+    private getUpladDrawingForm=async (request: express.Request, response: express.Response, next: express.NextFunction)=> {
+       return  response.render('addProduct');
+
+    }
+
+
+    }
 
 
 
-
-}
 
 export default ProductController;

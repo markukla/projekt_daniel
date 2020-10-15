@@ -21,7 +21,7 @@ import MaterialNotFoundExceptionn from "../Exceptions/MaterialNotFoundException"
 
 
 
-class MaterialController implements Controller<Material>{
+class MaterialController implements Controller{
     public path = '/materials';
     public router = express.Router();
     public  service:MaterialService=new MaterialService();

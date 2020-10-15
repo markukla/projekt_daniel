@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import RepositoryService from "./service.interface";
-interface Controller<T> {
+interface Controller {
     path: string;
     router: Router;
-    service:RepositoryService;
+    service?:RepositoryService;
 
 }
 

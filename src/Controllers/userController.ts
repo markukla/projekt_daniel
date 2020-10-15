@@ -17,7 +17,7 @@ import UpdatePrivilegedUserWithouTPasswordDto from "../Models/Users/PrivilegedUs
 
 
 
-class UserController implements Controller<User>{
+class UserController implements Controller{
     public path = '/users';
     public router = express.Router();
     public  service:UserService=new UserService();

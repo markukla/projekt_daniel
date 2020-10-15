@@ -15,7 +15,7 @@ import UserService from "../RepositoryServices/userRepositoryService";
 
 
 
-class BusinessPartnerController implements Controller<User>{
+class BusinessPartnerController implements Controller{
     public path = '/business_partners';
     public router = express.Router();
     public  service:UserService=new UserService();

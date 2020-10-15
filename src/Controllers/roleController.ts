@@ -10,7 +10,7 @@ import CreateRoleDto from "../Models/Role/role.dto";
 import RoleService from "../RepositoryServices/roleRepositoryService";
 
 
-class RoleController implements Controller<Role>{
+class RoleController implements Controller{
     public path = '/roles';
     public router = express.Router();
     public  service:RoleService=new RoleService();

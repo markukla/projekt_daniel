@@ -13,7 +13,7 @@ import RequestWithUser from "../interfaces/requestWithUser.interface";
 import authMiddleware from "../middleware/auth.middleware";
 import LoggedUser from "./loggedUser";
 
-class AuthenticationController implements Controller<User> {
+class AuthenticationController implements Controller {
   public path = '/auth';
   public router = express.Router();
  public service = new AuthenticationService();
