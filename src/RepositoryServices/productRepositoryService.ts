@@ -47,14 +47,14 @@ class ProductService implements RepositoryService {
 
     }
 
-    public async addOneProduct(createProductDto: CreateProductDto): Promise<Product> {
+    public async addOneProduct(createProductDto: CreateProductDto,orginalDrawingUrl:string): Promise<Product> {
         // do not allow to add the same product twice
         const productInDaTabase: Product = await this.findOneProductByProductTypeProductTopTypeProductBottomTypeAndAppropriateCodes(createProductDto);
         if (productInDaTabase) {
             throw new ProductAlreadyExistsException();
         }
         // i nedd to find the way to obtain urls, for now they are empty string
-        const orginalDrawingUrl: string = '';
+
         const minimalizeDrawingUrl:string='';
         const htmlViewFormUrl:string='';
 
@@ -62,7 +62,7 @@ class ProductService implements RepositoryService {
             ...createProductDto,
             urlOfOrginalDrawing:orginalDrawingUrl,
             urlOfThumbnailDrawing:minimalizeDrawingUrl,
-            urlOfDrawingFormHtmlView:htmlViewFormUrl
+
 
         };
         const savedProduct:Product = await this.repository.save(productTosave);
@@ -70,7 +70,7 @@ class ProductService implements RepositoryService {
 
     }
 
-    public async updateProductById(id: string, createProductDto: CreateProductDto): Promise<Product> {
+    public async updateProductById(id: string, createProductDto: CreateProductDto,drawingPath:string): Promise<Product> {
         const idOfExistingProduct: boolean = await this.findOneProductById(id) !== null;
         if (idOfExistingProduct) {
 
@@ -79,7 +79,14 @@ class ProductService implements RepositoryService {
             if(productInDatabase&&productInDatabase.id!==Number(id)){
                 throw new ProductAlreadyExistsException();
             }
-            const updateResult: UpdateResult = await this.repository.update(id, createProductDto);
+        const productDataToUpdate:Product={
+            ...createProductDto,
+            urlOfOrginalDrawing:drawingPath,
+            urlOfThumbnailDrawing:'',  // nedd to be fixed for now it is empty string
+
+
+        }
+            const updateResult: UpdateResult = await this.repository.update(id, productDataToUpdate);
             if (updateResult.affected === 1) {
                 const updatedProduct: Product = await this.findOneProductById(id);
                 return updatedProduct;

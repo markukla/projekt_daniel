@@ -1,5 +1,9 @@
 
-const imageFilter = function(req, file, cb) {
+import * as express from 'express';
+import * as multer from "multer";
+
+
+const imagesFilter = function(req:any, file:any, cb:any) {
     // Accept images only
     if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
         req.fileValidationError = 'Only image files are allowed!';
@@ -7,4 +11,4 @@ const imageFilter = function(req, file, cb) {
     }
     cb(null, true);
 };
-exports.imageFilter = imageFilter;
+exports.imageFilter = imagesFilter;

@@ -26,11 +26,7 @@ class ProductController implements Controller{
     public path = '/products';
     public router = express.Router();
     public  service:ProductService=new ProductService();
-    public upload = multer({
-        dest: "../../public/images"
-        // you might also want to set some limits: https://github.com/expressjs/multer#limits
 
-    });
 
     constructor() {
         this.initializeRoutes();
@@ -41,6 +37,11 @@ class ProductController implements Controller{
             .contentType("text/plain")
             .end("Oops! Something went wrong!");
     };
+    public upload = multer({
+        dest: "../../public/images"
+        // you might also want to set some limits: https://github.com/expressjs/multer#limits
+
+    });
 
 
 
@@ -48,19 +49,27 @@ class ProductController implements Controller{
         this.router.get(this.path, authMiddleware,adminAuthorizationMiddleware,this.getAllProducts);
 
         this.router.get(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.getOneProductById);
-        this.router.patch(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, validationMiddleware(CreateProductDto, true), this.updateProductById);
+        this.router.post(`${this.path}/:id`,this.upload.single("file"), validationMiddleware(CreateProductDto, true), this.updateProductById);//remeber to add authentication admin authorization middleware after tests
         this.router.delete(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.deleteOneProductById);
-        this.router.post(this.path,authMiddleware,adminAuthorizationMiddleware,validationMiddleware(CreateProductDto), this.addOneProduct);
+        this.router.post(this.path,this.upload.single("file"),validationMiddleware(CreateProductDto), this.addOneProduct);//remeber to add authentication admin authorization middleware after tests
+        this.router.get(`/addProduct`, this.getAddProductFormView);
+        this.router.get(`/updateProduct/:id`, this.getUpdateProductFormView);
 
 
     }
 
-    private addOneProduct = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
-        const productData: CreateProductDto = request.body;
-        try {
-            const product:Product = await this.service.addOneProduct(productData);
+    private addOneProduct = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+       const targetPath=this.uploadedDrawingToserwerAndGetPath(req,res,next);
+        const productData: CreateProductDto = req.body;
+        console.log(productData);
 
-            response.send(product);
+        try {
+            const product:Product = await this.service.addOneProduct(productData,targetPath); // it is probably wrong path
+
+            res.send({
+                message:"new Product added:",
+                product:product
+            });
         } catch (error) {
             next(error);
         }
@@ -70,8 +79,9 @@ class ProductController implements Controller{
     private updateProductById = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
         const productData:CreateProductDto=request.body;
         const id:string=request.params.id;
+        const drawingPath=this.uploadedDrawingToserwerAndGetPath(request,response,next);
         try {
-            const updatedProduct = await this.service.updateProductById(id, productData);
+            const updatedProduct = await this.service.updateProductById(id, productData,drawingPath);
             if(updatedProduct){
                 response.send(updatedProduct)}
             else {next(new ProductNotFoundExceptionn(id));
@@ -139,8 +149,66 @@ class ProductController implements Controller{
 
     }
 
-    private getUpladDrawingForm=async (request: express.Request, response: express.Response, next: express.NextFunction)=> {
-       return  response.render('addProduct');
+
+    private uploadedDrawingToserwerAndGetPath= (req: express.Request, res: express.Response, next: express.NextFunction):string => {
+        // actually file is already uploaded by multer middleware we just check it path extension is correct and if not remove file by fs.unlink
+
+        if(!req.file){
+            res.send({
+                   status:403,
+                    message:"cannot add product, because no drawign choosen"
+
+
+            });
+
+        }
+        const tempPath :string= req.file.path;
+        console.log(tempPath);
+
+
+        const fileName:string=req.file.originalname;
+        const date:Date=new Date();
+        const time=date.getTime();
+
+        const targetPath:string = path.join(__dirname, `../../public/images/`,`${time}${fileName}`);
+        console.log(targetPath);
+        /* path starts from host*/
+        const host = req.host;
+        console.log(host);
+        const filePath = req.protocol + "://" + host + ':5000/' +`${time}public/images/${fileName}`;
+
+
+
+        if (path.extname(req.file.originalname).toLowerCase() === ".png") {
+            fs.rename(tempPath, targetPath, err => {
+                if (err) {
+                    return this.handleError(err, res);
+                }
+
+
+
+
+            });
+        } else {
+            fs.unlink(tempPath, err => {
+                if (err) return this.handleError(err, res);
+
+                res
+                    .status(403)
+                    .contentType("text/plain")
+                    .end("Only .png files are allowed!");
+            });
+        }
+        return targetPath;
+
+    }
+
+    private getAddProductFormView=async (request: express.Request, response: express.Response, next: express.NextFunction)=> {
+        return  response.render('addProduct');
+
+    }
+    private getUpdateProductFormView=async (request: express.Request, response: express.Response, next: express.NextFunction)=> {
+        return  response.render('updateProduct.ejs');
 
     }
 
