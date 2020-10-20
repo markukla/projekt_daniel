@@ -48,7 +48,7 @@ class ProductController implements Controller{
     private initializeRoutes() {
         this.router.get(this.path, authMiddleware,adminAuthorizationMiddleware,this.getAllProducts);
 
-        this.router.get(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.getOneProductById);
+        this.router.get(`${this.path}/:id`, this.getOneProductById);
         this.router.post(`${this.path}/:id`,this.upload.single("file"), validationMiddleware(CreateProductDto, true), this.updateProductById);//remeber to add authentication admin authorization middleware after tests
         this.router.delete(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.deleteOneProductById);
         this.router.post(this.path,this.upload.single("file"),validationMiddleware(CreateProductDto), this.addOneProduct);//remeber to add authentication admin authorization middleware after tests
@@ -116,6 +116,7 @@ class ProductController implements Controller{
         try{
             const foundProduct:Product=await this.service.findOneProductById(id);
             if(foundProduct){
+
                 response.send(foundProduct)
             }
             else {

@@ -35,8 +35,7 @@ class Product{  // this class represents type of product and technical drawing o
     @Column()
     urlOfThumbnailDrawing:string; // smaller drawing obtained by library
   // it is a html view which consits of orginal drawing and table with html form to be filled by the user (information table below the drawing)
-    @OneToMany(()=>Order,(order:Order)=>order.product)  // do not forein key
-orders:Order []
+
 
     constructor(productType: string, productCode: string, productTopType: string, productTopCode: string, productBottomType: string, productBottomCode: string, urlOfOrginalDrawing: string, urlOfThumbnailDrawing: string) {
         this.productType = productType;

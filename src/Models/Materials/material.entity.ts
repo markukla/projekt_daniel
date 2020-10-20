@@ -16,7 +16,7 @@ class Material{
     materialName:string;
 
     @OneToMany(()=>Order,(order:Order)=>order.productMaterial)
-    orders:Order[];
+    orders?:Order[];
 
 
     constructor(materialCode: string, materialName: string) {

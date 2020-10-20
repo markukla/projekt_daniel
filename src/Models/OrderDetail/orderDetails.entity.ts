@@ -1,4 +1,4 @@
-import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import WorkingSideEnum from "./workingSideEnum";
 import User from "../Users/user.entity";
 import Order from "../Order/order.entity";
@@ -25,11 +25,10 @@ class OrderDetails {
     index:string;
 
     @Column()
-    data:Date
+    data:string;
     @Column()
     orderName:String;
-    @OneToOne(()=>Order,(order:Order)=>order.orderDetails) // this side does not have a forein key
-    order:Order;
+
 
 
 

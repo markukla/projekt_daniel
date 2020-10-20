@@ -19,6 +19,7 @@ import UserWithThisEmailDoesNotExistException from "../Exceptions/UserWithThisEm
 import WeekPasswordException from "../Exceptions/ToWeekPasswordException";
 import PasswordValidationResult from "../utils/validatePassword/passwordValidationResult";
 import PrivilligedUserNotFoundException from "../Exceptions/PrivilligedUserNotFoundException";
+import ProductNotFoundExceptionn from "../Exceptions/ProductNotFoundException";
 
 class UserService implements RepositoryService {
 
@@ -42,6 +43,24 @@ class UserService implements RepositoryService {
 
 
     }
+    public async findUserById(id: string): Promise<User> {  // user here reference to all kind of users so business partners and privilliged users
+
+        const foundUser = await this.manager.findOne(User,id,
+
+            {relations: ['roles']});
+
+        if (!foundUser) {
+            throw new UserNotFoundException(id);
+        }
+
+        return foundUser;
+
+
+
+
+
+    }
+
 
     public async registerPrivilegedUser(userData: CreatePrivilegedUserDto): Promise<User> {
         if (await this.findUserByEmail(userData.email)) {
@@ -100,7 +119,7 @@ class UserService implements RepositoryService {
     public findOnePrivilegedUserById = async (id: string): Promise<User> => {
 
 
-        const foundUser: User = await this.manager.findOne(User, id, {relations: ['roles']});
+        const foundUser: User = await this.manager.findOne(User, id, {relations: ["roles","ordersWhichPointThisUserAsBusinessPartner","ordersCreatedByThisUser"]});// relations it is not a table name, but field name, cause there could be many relations betwean 2 tables
         if (!foundUser) {
             throw new UserNotFoundException(String(id));
         } else if (foundUser) {

@@ -11,6 +11,7 @@ import {
 import Role from "../Role/role.entity";
 import {IsBoolean} from "class-validator";
 import Order from "../Order/order.entity";
+import OrderDetails from "../OrderDetail/orderDetails.entity";
 
 @Entity("users")
 class User {
@@ -39,11 +40,11 @@ class User {
     roles: Role[];
 
 @OneToMany(()=>Order,(order:Order)=>order.businessPartner)  //one businessPartene:USer can be asigned to many orders
-    ordersAsignedToBusinessPartner:Order[];
+    ordersWhichPointThisUserAsBusinessPartner?:Order[];
 
 
 @OneToMany(()=>Order,(order:Order)=>order.creator)  //use user can create many orders
-ordersCreatedByUser:Order[];
+ordersCreatedByThisUser?:Order[];
 
 }
 

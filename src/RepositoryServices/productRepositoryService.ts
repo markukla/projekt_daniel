@@ -8,6 +8,7 @@ import Product from "../Models/Products/product.entity";
 import ProductNotFoundExceptionn from "../Exceptions/ProductNotFoundException";
 import CreateProductDto from "../Models/Products/product.dto";
 import ProductAlreadyExistsException from "../Exceptions/ProductAlreadyExistsException";
+import Order from "../Models/Order/order.entity";
 
 
 class ProductService implements RepositoryService {
@@ -15,7 +16,7 @@ class ProductService implements RepositoryService {
     public repository = getRepository(Product);
 
     public async findOneProductById(id: string): Promise<Product> {
-        const foundProduct: Product = await this.repository.findOne(id);
+        const foundProduct: Product = await this.repository.findOne(id); // table name not entity name
         if (!foundProduct) {
             throw new ProductNotFoundExceptionn(id);
         }
