@@ -3,29 +3,47 @@ import User from "../Users/user.entity";
 import Product from "../Products/product.entity";
 import Material from "../Materials/material.entity";
 import OrderDetails from "../OrderDetail/orderDetails.entity";
+import OrderVersionRegister from "../OrderVersionRegister/orderVersionRegister.entity";
 
 @Entity("orders")
-class Order{
+class Order {
 
     @PrimaryGeneratedColumn()
     public id?: number;
+    @Column()
+    orderNumber:number;  // it is not id because it is the same for orders with the same order version register
+    @Column()
+    orderVersionNumber:string;
+    @Column()
+    orderTotalNumber:String // orderNumber and version number with some separator
+    @Column()
+    index:string;
 
-   @ManyToOne(()=>User,( businessPartner:User)=>businessPartner.ordersWhichPointThisUserAsBusinessPartner,{eager:true})    // has a forein key
-    businessPartner:User;
+    @Column()
+    data:string;
+    @Column()
+    orderName:string;
 
-   @ManyToOne(()=>Product,{eager:true})  // has a forein key
-    product:Product;
+    @ManyToOne(() => User, (businessPartner: User) => businessPartner.ordersWhichPointThisUserAsBusinessPartner, {eager: true})    // has a forein key
+    businessPartner: User;
 
-  @ManyToOne(()=>Material,(productMaterial:Material)=>productMaterial.orders,{eager:true})
-    productMaterial:Material;
+    @ManyToOne(() => Product, {eager: true})  // has a forein key
+    product: Product;
 
-    @OneToOne(()=>OrderDetails,{eager:true,cascade:true})// has a forein key
+    @ManyToOne(() => Material, (productMaterial: Material) => productMaterial.orders, {eager: true})
+    productMaterial: Material;
+
+    @OneToOne(() => OrderDetails, {eager: true, cascade: true,onDelete:"CASCADE"})// has a forein key
     @JoinColumn() // this determines that foreing key will be on this side of relation
-    orderDetails:OrderDetails;
-    @ManyToOne(()=>User,(creator:User)=>creator.ordersCreatedByThisUser,{eager:true})
-    creator:User
+    orderDetails: OrderDetails;
+    @ManyToOne(() => User, (creator: User) => creator.ordersCreatedByThisUser, {eager: true})
+    creator: User
+
+@ManyToOne(()=>OrderVersionRegister,(orderVersionRegister:OrderVersionRegister)=>orderVersionRegister.orders,{eager: true, cascade: true,onDelete:"CASCADE"})
+    orderVersionRegister:OrderVersionRegister;
 
 
 
 }
+
 export default Order;

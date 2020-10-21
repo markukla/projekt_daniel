@@ -101,7 +101,7 @@ class UserService implements RepositoryService {
     public getAllPrivilegedUsers = async (): Promise<User[]> => {
         // in relation option: it takes table name as paramter, not enity name
 
-        const allUsers: User[] = await this.manager.find(User, {relations: ['roles']});
+        const allUsers: User[] = await this.manager.find(User, {relations: ['roles',"ordersWhichPointThisUserAsBusinessPartner","ordersCreatedByThisUser"]});
 
         const adminOrEditors: User[] = [];
 
@@ -242,7 +242,7 @@ class UserService implements RepositoryService {
     public getAllBusinessPartners = async (): Promise<User[]> => {
         // in relation option: it takes table name as paramter, not enity name
 
-        const allUsers: User[] = await this.manager.find(User, {relations: ['roles']});
+        const allUsers: User[] = await this.manager.find(User, {relations: ['roles',"ordersWhichPointThisUserAsBusinessPartner","ordersCreatedByThisUser"]});
         const businesPartners: User[] = [];
 
         allUsers.forEach(user => {
@@ -257,7 +257,7 @@ class UserService implements RepositoryService {
     public findOnePartnerById = async (id: string): Promise<User> => {
 
 
-        const foundUser: User = await this.manager.findOne(User, id, {relations: ['roles']});
+        const foundUser: User = await this.manager.findOne(User, id, {relations: ['roles',"ordersWhichPointThisUserAsBusinessPartner","ordersCreatedByThisUser"]});
         if (!foundUser) {
             throw new BusinessPartnerNotFoundException(String(id));
         }

@@ -1,7 +1,8 @@
-import {Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import WorkingSideEnum from "./workingSideEnum";
 import User from "../Users/user.entity";
 import Order from "../Order/order.entity";
+import Dimension from "./dimension";
 
 
 @Entity('orderDetails')
@@ -15,21 +16,12 @@ class OrderDetails {
     anti_electrostatic:boolean;
     @Column()
     workingSide:WorkingSideEnum;
-    @Column()
-    orderNumber:number;
-    @Column()
-    orderVersionNumber:number;
-    @Column()
-    orderTotalNumber:String // orderNumber and version number with some separator
-    @Column()
-    index:string;
 
-    @Column()
-    data:string;
-    @Column()
-    orderName:String;
+    @Column({type:"jsonb"})
+    dimensions:Dimension[];
 
-
+@OneToOne(()=>Order,(order:Order)=>order.orderDetails)
+    order?:Order;
 
 
 
