@@ -33,13 +33,13 @@ class Order {
     @ManyToOne(() => Material, (productMaterial: Material) => productMaterial.orders, {eager: true})
     productMaterial: Material;
 
-    @OneToOne(() => OrderDetails, {eager: true, cascade: true,onDelete:"CASCADE"})// has a forein key
+    @OneToOne(() => OrderDetails, {eager: true, cascade:true,onDelete:"CASCADE"})// has a forein key
     @JoinColumn() // this determines that foreing key will be on this side of relation
     orderDetails: OrderDetails;
     @ManyToOne(() => User, (creator: User) => creator.ordersCreatedByThisUser, {eager: true})
     creator: User
 
-@ManyToOne(()=>OrderVersionRegister,(orderVersionRegister:OrderVersionRegister)=>orderVersionRegister.orders,{eager: true, cascade: true,onDelete:"CASCADE"})
+@ManyToOne(()=>OrderVersionRegister,(orderVersionRegister:OrderVersionRegister)=>orderVersionRegister.orders,{eager: true,cascade:true})
     orderVersionRegister:OrderVersionRegister;
 
 

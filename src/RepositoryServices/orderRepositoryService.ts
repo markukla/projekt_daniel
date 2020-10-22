@@ -14,6 +14,7 @@ import UserService from "./userRepositoryService";
 import MaterialService from "./materialRepositoryService";
 import ProductService from "./productRepositoryService";
 import OrderVersionRegister from "../Models/OrderVersionRegister/orderVersionRegister.entity";
+import OrderDetails from "../Models/OrderDetail/orderDetails.entity";
 
 
 class OrderService implements RepositoryService {
@@ -44,14 +45,12 @@ class OrderService implements RepositoryService {
     }
 
     public async addNewOrder(createOrderDto: CreateOrderDto): Promise<Order> {
-        // do not allow to add the same product twice
 
         let orderNumber:number=await this.obtainOrderNumberForNewOrder();
         let versionNumber:string =this.getCurentDateAndTime();
-
-
-
         let totalNumber=`${orderNumber}.${versionNumber}`
+
+
         const orderToSave: Order = {
             // it would be good to add only id of related object, because actually they are save, in this version extra quring is required. I need to try to optimize this it time allows !!
 
@@ -68,6 +67,7 @@ class OrderService implements RepositoryService {
             orderNumber:await this.obtainOrderNumberForNewOrder(),
             orderTotalNumber:totalNumber,
             orderVersionNumber:versionNumber
+
 
         };
         const savedOrder:Order = await this.repository.save(orderToSave);
@@ -94,11 +94,27 @@ class OrderService implements RepositoryService {
 
     }
 
-    public async deleteOrderVersionRegisterById(currentOrderId:string):Promise<DeleteResult>{
-       const currentOrder=await this.findOneOrderById(currentOrderId);
+    public async deleteOrderVersionRegisterById(currentOrderId:string){
+       const currentOrder=await this.repository.findOne(currentOrderId,{relations:["orderVersionRegister"]});
+       const orderRegisterToDelete=currentOrder.orderVersionRegister;
+       console.log(`orderRegisterToDelete=${orderRegisterToDelete}`);
+       const orderRegisterToDeleteObtainedWithDiffrenyQueary=await this.manager.findOne(OrderVersionRegister,orderRegisterToDelete.id,{relations:["orders"]})
+       const ordersOfOrderRegsterTODelete=orderRegisterToDeleteObtainedWithDiffrenyQueary.orders;
+        console.log(`ordersOfOrderRegsterTODelete=${ordersOfOrderRegsterTODelete}`);
+/*
+cascade removal of orderDetails does not work,
+ but the way below to manually remove does not work
 
-       const orderRegisterToDeleteId=String(currentOrder.orderVersionRegister.id);
-       const deleteResult:DeleteResult=await this.manager.delete(OrderVersionRegister,orderRegisterToDeleteId);
+*/
+
+        for(let i=0;i<ordersOfOrderRegsterTODelete.length;i++) {
+            await this.manager.remove(Order, ordersOfOrderRegsterTODelete[i]);
+            await this.manager.remove(OrderDetails, ordersOfOrderRegsterTODelete[i].orderDetails)
+        }
+
+
+            const deleteResult =await this.manager.remove(OrderVersionRegister,orderRegisterToDeleteObtainedWithDiffrenyQueary);
+
         return deleteResult;
 
     }
@@ -108,7 +124,7 @@ class OrderService implements RepositoryService {
 const registerToUpdate:OrderVersionRegister= order.orderVersionRegister;
         const orderRegisterNumber:number=registerToUpdate.id // asume that newest version will be lase elemnet in database table
 let newOrderVersionNumber=this.getCurentDateAndTime(); // order number and order version number is not given from frond but obtained in the backend
-        let newOrderTotalNumber=`${orderRegisterNumber}.${newOrderVersionNumber}`;
+        let newOrderTotalNumber=`${order.orderNumber}.${newOrderVersionNumber}`;
         const newVersionOfOrderToSaveInRegister: Order = {
 
             // it would be good to add only id of related object, because actually they are save, in this version extra quring is required. I need to try to optimize this it time allows !!
@@ -119,7 +135,7 @@ let newOrderVersionNumber=this.getCurentDateAndTime(); // order number and order
             productMaterial:await this.materialRepositoryService.findOneMaterialById(createOrderDto.productId),
             orderVersionRegister:registerToUpdate,
             orderVersionNumber:newOrderVersionNumber,
-            orderNumber:orderRegisterNumber,
+            orderNumber:order.orderNumber,
             orderTotalNumber:newOrderTotalNumber,
             orderName:createOrderDto.orderName,
             index:createOrderDto.index,
@@ -138,8 +154,8 @@ let newOrderVersionNumber=this.getCurentDateAndTime(); // order number and order
         const orderRegisters=await this.findAllOrdersVersionsRegisters();
         let newestOrderNumber:number;
         if(orderRegisters.length>0){
-            let newestOrderNumberinDataBase:number=orderRegisters[orderRegisters.length-1].id;
-       newestOrderNumber=newestOrderNumberinDataBase+1;
+            let newestOrderNumberinDataBase:number=orderRegisters.length+1
+       newestOrderNumber=newestOrderNumberinDataBase;
         }
         else {  // no ordersREgistersFound(they are created with addingOrders) which means that it is first order in database
 

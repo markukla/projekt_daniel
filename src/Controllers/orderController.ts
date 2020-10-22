@@ -153,8 +153,8 @@ class OrderController implements Controller{
             const currentOrder=await this.service.findOneOrderById(curerntOrderid);
 
             const versionRegisterId=String(currentOrder.orderVersionRegister.id);
-            const deleteResult:DeleteResult=await this.service.deleteOrderVersionRegisterById(versionRegisterId);
-            if(deleteResult.affected===1){
+            const deleteResult=await this.service.deleteOrderVersionRegisterById(versionRegisterId);
+            if(deleteResult){
                 response.send({
                     status:200,
                     message:'order and its version history removed'

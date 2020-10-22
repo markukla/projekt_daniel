@@ -4,10 +4,10 @@ import Order from "../Order/order.entity";
 
 @Entity("orderVersionRegisters")
 class OrderVersionRegister{
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("rowid")
     id?:number;
     @OneToMany(()=>Order,(order:Order)=>order.orderVersionRegister)
-    orders: Order []
+    orders: Order [];
 
 
 
