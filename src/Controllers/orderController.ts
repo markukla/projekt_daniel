@@ -22,6 +22,8 @@ import OrderService from "../RepositoryServices/orderRepositoryService";
 import CreateOrderDto from "../Models/Order/order.dto";
 import Order from "../Models/Order/order.entity";
 import {DeleteResult} from "typeorm";
+import OrderVersionRegister from "../Models/OrderVersionRegister/orderVersionRegister.entity";
+import OrderNotFoundException from "../Exceptions/OrderNotFoundException";
 const path = require('path');
 
 
@@ -82,7 +84,7 @@ class OrderController implements Controller{
             const order:Order = await this.service.addNewVersionOfOrder(orderData,req.params.id); // it is probably wrong path
 
             res.send({
-                message:"new Order added:",
+                message:"new order version added:",
                 order:order
             });
         } catch (error) {
@@ -114,12 +116,7 @@ class OrderController implements Controller{
         const id:string=request.params.id;
         try{
             const foundOrder:Order=await this.service.findOneOrderById(id);
-            if(foundOrder){
-                response.send(foundOrder)
-            }
-            else {
-                next(new ProductNotFoundExceptionn(id));
-            }
+
         }
         catch (error) {
             next(error);
@@ -153,15 +150,18 @@ class OrderController implements Controller{
             const currentOrder=await this.service.findOneOrderById(curerntOrderid);
 
             const versionRegisterId=String(currentOrder.orderVersionRegister.id);
-            const deleteResult=await this.service.deleteOrderVersionRegisterById(versionRegisterId);
-            if(deleteResult){
+            const deletedOrderRegister:OrderVersionRegister=await this.service.deleteOrderVersionRegisterById(versionRegisterId);
+            if(deletedOrderRegister){
                 response.send({
                     status:200,
                     message:'order and its version history removed'
                 });
             }
             else {
-                next(new ProductNotFoundExceptionn(curerntOrderid));
+                response.send({
+                    status:500,
+                    message:'Ops something went wrong, could not remove order'
+                });
             }
         }
         catch (error) {

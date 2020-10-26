@@ -1,5 +1,8 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import Order from "../Order/order.entity";
+import ProductType from "./productType.entity";
+import ProductBottom from "./productBottom.entity";
+import ProductTop from "./productTop.entity";
 
 @Entity("products")
 class Product{  // this class represents type of product and technical drawing of product
@@ -7,23 +10,18 @@ class Product{  // this class represents type of product and technical drawing o
     @PrimaryGeneratedColumn()
     public id?: number;
 
-    @Column()
-    productType:string;
+   @ManyToOne(()=>ProductType,(productType:ProductType)=>productType.productsWithThisType,{eager:true,cascade:true})
+   productType:ProductType;
 
-    @Column()
-    productCode:string;
+    @ManyToOne(()=>ProductBottom,(productBottom:ProductBottom)=>productBottom.productsWithThisBottomType,{eager:true,cascade:true})
+    productBottom:ProductBottom;
 
-    @Column()
-    productTopType:string;
+    @ManyToOne(()=>ProductBottom,(productBottom:ProductBottom)=>productBottom.productsWithThisBottomType,{eager:true,cascade:true})
+    productTop:ProductTop;
 
-    @Column()
-    productTopCode:string;
 
-    @Column()
-    productBottomType:string;
 
-    @Column()
-    productBottomCode:string;
+
 
     @Column()
     dimensionsCodes:string; // all dimensions separeted by coma

@@ -15,6 +15,7 @@ import MaterialService from "./materialRepositoryService";
 import ProductService from "./productRepositoryService";
 import OrderVersionRegister from "../Models/OrderVersionRegister/orderVersionRegister.entity";
 import OrderDetails from "../Models/OrderDetail/orderDetails.entity";
+import OrderNotFoundException from "../Exceptions/OrderNotFoundException";
 
 
 class OrderService implements RepositoryService {
@@ -28,7 +29,7 @@ class OrderService implements RepositoryService {
     public async findOneOrderById(id: string): Promise<Order> {
         const foundOrder: Order = await this.repository.findOne(id);
         if (!foundOrder) {
-            throw new ProductNotFoundExceptionn(id);
+            throw new OrderNotFoundException(id);
         }
         return foundOrder;
 
@@ -47,7 +48,7 @@ class OrderService implements RepositoryService {
     public async addNewOrder(createOrderDto: CreateOrderDto): Promise<Order> {
 
         let orderNumber:number=await this.obtainOrderNumberForNewOrder();
-        let versionNumber:string =this.getCurentDateAndTime();
+        let versionNumber:string =this.getCurrentDateAndTime();
         let totalNumber=`${orderNumber}.${versionNumber}`
 
 
@@ -61,7 +62,7 @@ class OrderService implements RepositoryService {
             orderDetails:createOrderDto.orderDetails,
             productMaterial:await this.materialRepositoryService.findOneMaterialById(createOrderDto.productId),
             orderVersionRegister:new OrderVersionRegister(), // this entity is saved due to cascade enabled
-            data:this.getCurentDateAndTime(),
+            data:this.getCurrentDateAndTime(),
             index:createOrderDto.index,
             orderName:createOrderDto.orderName,
             orderNumber:await this.obtainOrderNumberForNewOrder(),
@@ -96,14 +97,18 @@ class OrderService implements RepositoryService {
 
     public async deleteOrderVersionRegisterById(currentOrderId:string){
        const currentOrder=await this.repository.findOne(currentOrderId,{relations:["orderVersionRegister"]});
-       const orderRegisterToDelete=currentOrder.orderVersionRegister;
-       console.log(`orderRegisterToDelete=${orderRegisterToDelete}`);
-       const orderRegisterToDeleteObtainedWithDiffrenyQueary=await this.manager.findOne(OrderVersionRegister,orderRegisterToDelete.id,{relations:["orders"]})
-       const ordersOfOrderRegsterTODelete=orderRegisterToDeleteObtainedWithDiffrenyQueary.orders;
-        console.log(`ordersOfOrderRegsterTODelete=${ordersOfOrderRegsterTODelete}`);
+       if(!currentOrder){
+           throw new OrderNotFoundException(currentOrderId);
+       }
+       const orderRegisterToDeleteId=currentOrder.orderVersionRegister.id;
+       // other query is required to obtain orders in this OrderRegister, it cannot be done by currentOrder.orderVersionRegister.orders due to eager limitations
+       const orderRegisterToDeleteObtainedWithDiffrentQuery=await this.manager.findOne(OrderVersionRegister,orderRegisterToDeleteId,{relations:["orders"]})
+       const ordersOfOrderRegsterTODelete=orderRegisterToDeleteObtainedWithDiffrentQuery.orders;
+
 /*
 cascade removal of orderDetails does not work,
- but the way below to manually remove does not work
+so i manually remove them in loop below. First i remove order, to avoid foreign key violation error.
+On the end i remove version register object for given order, to remove all versions of this order
 
 */
 
@@ -113,18 +118,18 @@ cascade removal of orderDetails does not work,
         }
 
 
-            const deleteResult =await this.manager.remove(OrderVersionRegister,orderRegisterToDeleteObtainedWithDiffrenyQueary);
+            const deleteResult =await this.manager.remove(OrderVersionRegister,orderRegisterToDeleteObtainedWithDiffrentQuery);
 
         return deleteResult;
 
     }
     public async addNewVersionOfOrder(createOrderDto: CreateOrderDto,currentOrderId:string): Promise<Order> {
-        const order:Order=await this.findOneOrderById(currentOrderId);
+        const currentOrder:Order=await this.findOneOrderById(currentOrderId);
 
-const registerToUpdate:OrderVersionRegister= order.orderVersionRegister;
-        const orderRegisterNumber:number=registerToUpdate.id // asume that newest version will be lase elemnet in database table
-let newOrderVersionNumber=this.getCurentDateAndTime(); // order number and order version number is not given from frond but obtained in the backend
-        let newOrderTotalNumber=`${order.orderNumber}.${newOrderVersionNumber}`;
+const registerToUpdate:OrderVersionRegister= currentOrder.orderVersionRegister;
+
+let newOrderVersionNumber=this.getCurrentDateAndTime(); // currentOrder number and currentOrder version number is not given from frond but obtained in the backend
+        let newOrderTotalNumber=`${currentOrder.orderNumber}.${newOrderVersionNumber}`;
         const newVersionOfOrderToSaveInRegister: Order = {
 
             // it would be good to add only id of related object, because actually they are save, in this version extra quring is required. I need to try to optimize this it time allows !!
@@ -133,13 +138,13 @@ let newOrderVersionNumber=this.getCurentDateAndTime(); // order number and order
             creator:await this.userRepositoryService.findUserById(createOrderDto.creatorId),
             orderDetails:createOrderDto.orderDetails,
             productMaterial:await this.materialRepositoryService.findOneMaterialById(createOrderDto.productId),
-            orderVersionRegister:registerToUpdate,
+            orderVersionRegister:registerToUpdate, // the same register as for cureent order
             orderVersionNumber:newOrderVersionNumber,
-            orderNumber:order.orderNumber,
+            orderNumber:currentOrder.orderNumber,  // has the same order number as in curent order, but diffrent version number
             orderTotalNumber:newOrderTotalNumber,
             orderName:createOrderDto.orderName,
             index:createOrderDto.index,
-            data:this.getCurentDateAndTime()
+            data:this.getCurrentDateAndTime()
 
 
         };
@@ -165,7 +170,7 @@ let newOrderVersionNumber=this.getCurentDateAndTime(); // order number and order
 
     }
 
-    public getCurentDateAndTime():string{
+    public getCurrentDateAndTime():string{
         let now = new Date();
         let date = now.getFullYear()+'-'+(now.getMonth()+1)+'-'+now.getDate();
         let time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();

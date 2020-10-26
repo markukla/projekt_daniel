@@ -180,7 +180,7 @@ class ProductController implements Controller{
 
 
 
-        if (path.extname(req.file.originalname).toLowerCase() === ".png") {
+        if (path.extname(req.file.originalname).toLowerCase() === ".pdf") {
             fs.rename(tempPath, targetPath, err => {
                 if (err) {
                     return this.handleError(err, res);
