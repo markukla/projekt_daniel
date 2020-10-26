@@ -1,30 +1,26 @@
-import {IsString, Length} from "class-validator";
+import {IsObject, IsString, Length} from "class-validator";
 import {Column} from "typeorm";
+import ProductType from "./productType.entity";
+import ProductTop from "./productTop.entity";
+import ProductBottom from "./productBottom.entity";
 
 //this class represents fields filled by the user, oter fields like url addresses will be obtained in other way
 class CreateProductDto{
 
 
 
-    @IsString()
-    productType:string;
-    @IsString()
-    productCode:string;
+    @IsObject()
+    productType:ProductType;
 
-    @IsString()
-    productTopType:string;
+    @IsObject()
+    productTop:ProductTop;
 
-    @IsString()
-    productTopCode:string;
+    @IsObject()
+    productBottom:ProductBottom;
 
-    @IsString()
-    productBottomType:string;
-
-    @IsString()
-    productBottomCode:string;
-
-    @IsString()
+    @IsObject()
     dimensionsCodes:string;
+
 
 
 }

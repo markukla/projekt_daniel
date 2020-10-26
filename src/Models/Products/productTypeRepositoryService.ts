@@ -5,9 +5,6 @@ import {DeleteResult, getRepository, UpdateResult} from "typeorm";
 
 
 
-
-import ProductAlreadyExistsException from "../Exceptions/ProductAlreadyExistsException";
-
 import ProductType from "./productType.entity";
 import ProductTypeNotFoundException from "../../Exceptions/ProductTypeNotFoundException";
 import CreateProductTypeDto from "./createProductType.dto";
@@ -59,7 +56,7 @@ class ProductTypeService implements RepositoryService {
         // do not allow to add the same product twice
         const productTypeWithThisCodeInDatabase: ProductType = await this.findOneProductTypeByProductTypeCode(createProductTypeDto);
         const productTypeWithThisNameInDatabase: ProductType = await this.findOneProductTypeByProductTypeName(createProductTypeDto);
-        let productTypeAlreadyExistInDatabase:boolean=productTypeWithThisCodeInDatabase!==null||productTypeWithThisNameInDatabase!==null;
+        let productTypeAlreadyExistInDatabase:boolean=productTypeWithThisCodeInDatabase!==undefined||productTypeWithThisNameInDatabase!==undefined;
 
         if (productTypeAlreadyExistInDatabase) {
             throw new ProductTypeAlreadyExistsException();

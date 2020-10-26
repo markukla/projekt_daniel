@@ -1,13 +1,13 @@
 import * as express from 'express';
 import {getManager, getRepository, Repository} from "typeorm";
-import Post from "../Models/Post/post.entity";
-import CreatePostDto from "../Models/Post/post.dto";
-import PostNotFoundException from "../Exceptions/PostNotFoundException";
+
+
 import RepositoryService from "../interfaces/service.interface";
 import User from "../Models/Users/user.entity";
 import CreatePrivilegedUserDto from "../Models/Users/PrivilegedUsers/user.dto";
 import Role from "../Models/Role/role.entity";
 import CreateRoleDto from "../Models/Role/role.dto";
+import RoleNotFoundException from "../Exceptions/RoleNotFoundException";
 
 class RoleService implements RepositoryService{
     public repository:Repository<Role>=getRepository(Role);
@@ -34,7 +34,7 @@ class RoleService implements RepositoryService{
         if (role) {
             response.send(role);
         } else {
-            next(new PostNotFoundException(id));
+            next(new RoleNotFoundException(id));
         }
     }
 
@@ -49,7 +49,7 @@ class RoleService implements RepositoryService{
             if (updatedRole) {
                 response.send(updatedRole);
             } else {
-                next(new PostNotFoundException(id));
+                next(new RoleNotFoundException(id));
             }
         }catch (e) {
             var erroType=e.type;
@@ -70,7 +70,7 @@ class RoleService implements RepositoryService{
         if (deleteResponse.affected===1) {
             response.sendStatus(200);
         } else {
-            next(new PostNotFoundException(id));
+            next(new RoleNotFoundException(id));
         }
     }
 }

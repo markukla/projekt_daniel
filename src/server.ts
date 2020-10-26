@@ -1,6 +1,6 @@
 
 import App from './app';
-import PostsController from "./Controllers/postController";
+
 import 'dotenv/config';
 import 'reflect-metadata';
 import {createConnection} from 'typeorm';
@@ -14,6 +14,7 @@ import {connectToDatabase} from "./utils/DatabaseUtil/manageDatabaseConnection";
 import MaterialController from "./Controllers/materialController";
 import ProductController from "./Controllers/productController";
 import OrderController from "./Controllers/orderController";
+import ProductTypeController from "./Models/Products/productTypeController";
 
 validateEnv();
 
@@ -31,12 +32,12 @@ validateEnv();
         [
             new RoleController(),
             new AuthenticationController(),
-            new PostsController(),
             new UserController(),
             new BusinessPartnerController(),
             new MaterialController(),
             new ProductController(),
-            new OrderController()
+            new OrderController(),
+            new ProductTypeController()
 
 
         ],

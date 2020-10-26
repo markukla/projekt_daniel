@@ -27,12 +27,13 @@ class ProductService implements RepositoryService {
 
     public async findOneProductByProductTypeProductTopTypeProductBottomTypeAndAppropriateCodes(createProductDto: CreateProductDto): Promise<Product> {
         const foundProduct: Product = await this.repository.findOne({
-            productCode: createProductDto.productCode,
-            productTopCode: createProductDto.productTopCode,
-            productBottomCode: createProductDto.productBottomCode,
+
+            productTop:createProductDto.productTop,
+            productBottom: createProductDto.productBottom,
             productType: createProductDto.productType,
-            productTopType: createProductDto.productTopType,
-            productBottomType: createProductDto.productBottomType
+            dimensionsCodes:createProductDto.dimensionsCodes
+
+
         });
 
         return foundProduct;

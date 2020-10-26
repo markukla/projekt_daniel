@@ -19,10 +19,6 @@ class Product{  // this class represents type of product and technical drawing o
     @ManyToOne(()=>ProductBottom,(productBottom:ProductBottom)=>productBottom.productsWithThisBottomType,{eager:true,cascade:true})
     productTop:ProductTop;
 
-
-
-
-
     @Column()
     dimensionsCodes:string; // all dimensions separeted by coma
 
@@ -35,17 +31,6 @@ class Product{  // this class represents type of product and technical drawing o
   // it is a html view which consits of orginal drawing and table with html form to be filled by the user (information table below the drawing)
 
 
-    constructor(productType: string, productCode: string, productTopType: string, productTopCode: string, productBottomType: string, productBottomCode: string, urlOfOrginalDrawing: string, urlOfThumbnailDrawing: string) {
-        this.productType = productType;
-        this.productCode = productCode;
-        this.productTopType = productTopType;
-        this.productTopCode = productTopCode;
-        this.productBottomType = productBottomType;
-        this.productBottomCode = productBottomCode;
-        this.urlOfOrginalDrawing = urlOfOrginalDrawing;
-        this.urlOfThumbnailDrawing = urlOfThumbnailDrawing;
-
-    }
 }
 
 export default Product;
