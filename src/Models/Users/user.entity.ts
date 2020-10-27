@@ -43,7 +43,7 @@ class User {
     ordersWhichPointThisUserAsBusinessPartner?:Order[];
 
 
-@OneToMany(()=>Order,(order:Order)=>order.creator)  //use user can create many orders
+@OneToMany(()=>Order,(order:Order)=>order.creator)  // user can create many orders
 ordersCreatedByThisUser?:Order[];
 
 }

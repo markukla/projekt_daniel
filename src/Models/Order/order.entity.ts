@@ -24,6 +24,9 @@ class Order {
     @Column()
     orderName:string;
 
+    @Column({nullable:true})
+    commentToOrder?:string;
+
     @ManyToOne(() => User, (businessPartner: User) => businessPartner.ordersWhichPointThisUserAsBusinessPartner, {eager: true})    // has a forein key
     businessPartner: User;
 

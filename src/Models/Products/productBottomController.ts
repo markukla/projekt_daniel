@@ -27,9 +27,9 @@ class ProductBottomController implements Controller {
     private initializeRoutes() {
         this.router.get(this.path, this.getAllProductBottoms);
         this.router.get(`${this.path}/:id`, this.getOneProductBottomById);
-        this.router.patch(`${this.path}/:id`, validationMiddleware(CreateProductTypeDto, true), this.updateProductTypeById);
+        this.router.patch(`${this.path}/:id`, validationMiddleware(CreateProductBottomDto, true), this.updateProductTypeById);
         this.router.delete(`${this.path}/:id`, this.deleteOneProductBottomById);
-        this.router.post(this.path, validationMiddleware(CreateProductTypeDto), this.addOneProductBottom);
+        this.router.post(this.path, validationMiddleware(CreateProductBottomDto), this.addOneProductBottom);
     }
 
     private addOneProductBottom = async (request: express.Request, response: express.Response, next: express.NextFunction) => {

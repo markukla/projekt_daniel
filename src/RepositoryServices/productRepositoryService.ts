@@ -31,7 +31,7 @@ class ProductService implements RepositoryService {
             productTop:createProductDto.productTop,
             productBottom: createProductDto.productBottom,
             productType: createProductDto.productType,
-            dimensionsCodes:createProductDto.dimensionsCodes
+
 
 
         });

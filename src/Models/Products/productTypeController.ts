@@ -43,11 +43,17 @@ class ProductTypeController implements Controller {
         const id: string = request.params.id;
         try {
             const updatedProductType = await this.service.updateProductTypeById(id, productData);
+            if (updatedProductType) {
+                response.send({
+                    message: "Product Type updated",
+                    updatedProductType: updatedProductType
+                });
+            }
+            else {
+                throw new ProductTypeNotFoundException(id);
+            }
 
-            response.send({
-                message:"Product Type updated",
-                updatedProductType:updatedProductType
-            });
+
         } catch (error) {
             next(error);
         }

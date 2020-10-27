@@ -55,19 +55,13 @@ class OrderService implements RepositoryService {
         const orderToSave: Order = {
             // it would be good to add only id of related object, because actually they are save, in this version extra quring is required. I need to try to optimize this it time allows !!
 
-
-            businessPartner:await this.userRepositoryService.findOnePartnerById(createOrderDto.partnerId),
-           product:await this.productRepositoryService.findOneProductById(createOrderDto.productId),
-            creator:await this.userRepositoryService.findUserById(createOrderDto.creatorId),
-            orderDetails:createOrderDto.orderDetails,
-            productMaterial:await this.materialRepositoryService.findOneMaterialById(createOrderDto.productId),
+            ...createOrderDto,
             orderVersionRegister:new OrderVersionRegister(), // this entity is saved due to cascade enabled
             data:this.getCurrentDateAndTime(),
-            index:createOrderDto.index,
-            orderName:createOrderDto.orderName,
-            orderNumber:await this.obtainOrderNumberForNewOrder(),
+            orderNumber:orderNumber,
             orderTotalNumber:totalNumber,
-            orderVersionNumber:versionNumber
+            orderVersionNumber:versionNumber,
+
 
 
         };
@@ -131,21 +125,12 @@ const registerToUpdate:OrderVersionRegister= currentOrder.orderVersionRegister;
 let newOrderVersionNumber=this.getCurrentDateAndTime(); // currentOrder number and currentOrder version number is not given from frond but obtained in the backend
         let newOrderTotalNumber=`${currentOrder.orderNumber}.${newOrderVersionNumber}`;
         const newVersionOfOrderToSaveInRegister: Order = {
-
-            // it would be good to add only id of related object, because actually they are save, in this version extra quring is required. I need to try to optimize this it time allows !!
-            businessPartner:await this.userRepositoryService.findOnePartnerById(createOrderDto.partnerId),
-            product:await this.productRepositoryService.findOneProductById(createOrderDto.productId),
-            creator:await this.userRepositoryService.findUserById(createOrderDto.creatorId),
-            orderDetails:createOrderDto.orderDetails,
-            productMaterial:await this.materialRepositoryService.findOneMaterialById(createOrderDto.productId),
+            ...createOrderDto,
             orderVersionRegister:registerToUpdate, // the same register as for cureent order
             orderVersionNumber:newOrderVersionNumber,
             orderNumber:currentOrder.orderNumber,  // has the same order number as in curent order, but diffrent version number
             orderTotalNumber:newOrderTotalNumber,
-            orderName:createOrderDto.orderName,
-            index:createOrderDto.index,
-            data:this.getCurrentDateAndTime()
-
+            data:this.getCurrentDateAndTime(),
 
         };
 

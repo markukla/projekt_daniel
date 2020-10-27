@@ -23,9 +23,9 @@ class ProductTopController implements Controller {
     private initializeRoutes() {
         this.router.get(this.path, this.getAllProductTopes);
         this.router.get(`${this.path}/:id`, this.getOneProductTopById);
-        this.router.patch(`${this.path}/:id`, validationMiddleware(CreateProductTypeDto, true), this.updateProductTypeById);
+        this.router.patch(`${this.path}/:id`, validationMiddleware(CreateProductTopDto, true), this.updateProductTypeById);
         this.router.delete(`${this.path}/:id`, this.deleteOneProductTypeById);
-        this.router.post(this.path, validationMiddleware(CreateProductTypeDto), this.addOneProductTope);
+        this.router.post(this.path, validationMiddleware(CreateProductTopDto), this.addOneProductTope);
     }
 
     private addOneProductTope = async (request: express.Request, response: express.Response, next: express.NextFunction) => {

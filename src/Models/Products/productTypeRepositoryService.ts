@@ -4,7 +4,6 @@ import RepositoryService from "../../interfaces/service.interface";
 import {DeleteResult, getRepository, UpdateResult} from "typeorm";
 
 
-
 import ProductType from "./productType.entity";
 import ProductTypeNotFoundException from "../../Exceptions/ProductTypeNotFoundException";
 import CreateProductTypeDto from "./createProductType.dto";
@@ -27,16 +26,17 @@ class ProductTypeService implements RepositoryService {
 
     public async findOneProductTypeByProductTypeCode(createProductTypeDto: CreateProductTypeDto): Promise<ProductType> {
         const foundProduct: ProductType = await this.repository.findOne({
-            productTypeCode:createProductTypeDto.productTypeCode
+            productTypeCode: createProductTypeDto.productTypeCode
         });
 
         return foundProduct;
 
 
     }
+
     public async findOneProductTypeByProductTypeName(createProductTypeDto: CreateProductTypeDto): Promise<ProductType> {
         const foundProduct: ProductType = await this.repository.findOne({
-            productTypeName:createProductTypeDto.productTypeName
+            productTypeName: createProductTypeDto.productTypeName
         });
 
         return foundProduct;
@@ -56,17 +56,17 @@ class ProductTypeService implements RepositoryService {
         // do not allow to add the same product twice
         const productTypeWithThisCodeInDatabase: ProductType = await this.findOneProductTypeByProductTypeCode(createProductTypeDto);
         const productTypeWithThisNameInDatabase: ProductType = await this.findOneProductTypeByProductTypeName(createProductTypeDto);
-        let productTypeAlreadyExistInDatabase:boolean=productTypeWithThisCodeInDatabase!==undefined||productTypeWithThisNameInDatabase!==undefined;
+        let productTypeAlreadyExistInDatabase: boolean = productTypeWithThisCodeInDatabase !== undefined || productTypeWithThisNameInDatabase !== undefined;
 
         if (productTypeAlreadyExistInDatabase) {
             throw new ProductTypeAlreadyExistsException();
         }
-        const productTypeToSave={
+        const productTypeToSave = {
             ...createProductTypeDto
         };
 
 
-        const savedProductType:ProductType = await this.repository.save(productTypeToSave);
+        const savedProductType: ProductType = await this.repository.save(productTypeToSave);
         return savedProductType;
 
     }
@@ -93,26 +93,24 @@ class ProductTypeService implements RepositoryService {
             }
 
             const productTypeToUpdate: ProductType = {
-                ...createProductTypeDto
+                ...createProductTypeDto,
+                id: Number(id)
 
-            }
-            const updateResult: UpdateResult = await this.repository.update(id, productTypeToUpdate);
-            if (updateResult.affected === 1) {
-                const updatedProductType: ProductType = await this.findOneProductTypeById(id);
-                return updatedProductType;
-            }
+            };
+            const ProductToUpdate: ProductType = await this.repository.save(productTypeToUpdate);
 
-
+            const updatedProductType: ProductType = await this.findOneProductTypeById(id);
+            return updatedProductType;
         }
     }
+
 
     public async deleteProductTypeById(id: string): Promise<DeleteResult> {
         const idOfExistingProductType: boolean = await this.findOneProductTypeById(id) !== null;
         if (idOfExistingProductType) {
             const deleteResult: DeleteResult = await this.repository.delete(id);
             return deleteResult;
-        }
-        else {
+        } else {
             throw new ProductTypeNotFoundException(id);
         }
 

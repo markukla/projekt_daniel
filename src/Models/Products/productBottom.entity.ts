@@ -1,5 +1,6 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import Product from "./product.entity";
+import ProductType from "./productType.entity";
 
 
 @Entity("productBottoms")
@@ -12,7 +13,10 @@ class ProductBottom {
     @Column({unique:true})
     productBottomCode:string;
     @OneToMany(()=>Product,(productWithThisBottom:Product)=>productWithThisBottom.productBottom)
-    productsWithThisBottomType?:Product[]
+    productsWithThisBottomType?:Product[];
+    @ManyToMany(()=>ProductType,(productType:ProductType)=>productType.productBottomsAvailableToThisProductType)
+    productTypesWhichHaveThisProductBottom?:ProductType[]
+
 
 
 

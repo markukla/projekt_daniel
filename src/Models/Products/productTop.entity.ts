@@ -1,5 +1,6 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import Product from "./product.entity";
+import ProductType from "./productType.entity";
 
 
 @Entity("productTops")
@@ -14,6 +15,8 @@ class ProductTop {
 
     @OneToMany(()=>Product,(productWithThisTop:Product)=>productWithThisTop.productTop)
     productsWithThisTopType?:Product[]
+    @ManyToMany(()=>ProductType,(productType:ProductType)=>productType.productTopsAvailableToThisProductType)
+    productTypesWhichHaveThisProductTop?:ProductType[]
 
 }
 
