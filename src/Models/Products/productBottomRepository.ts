@@ -57,7 +57,7 @@ class ProductBottomService implements RepositoryService {
 
     }
 
-    public async addOneProductType(createProductBottomDto: CreateProductBottomDto): Promise<ProductBottom> {
+    public async addOneProductBottom(createProductBottomDto: CreateProductBottomDto): Promise<ProductBottom> {
         // do not allow to add the same product twice
         const productBottomWithThisCodeInDatabase: ProductBottom = await this.findOneProductBottomByBottomCode(createProductBottomDto);
         const productBottomWithThisTypeInDatabase: ProductBottom = await this.findOneProductBottomByBottomType(createProductBottomDto);
@@ -96,11 +96,11 @@ class ProductBottomService implements RepositoryService {
                 }
             }
 
-            const productTypeToUpdate: ProductBottom = {
+            const productBottomToUpdate: ProductBottom = {
                 ...createProductBottomDto
 
             }
-            const updateResult: UpdateResult = await this.repository.update(id, productTypeToUpdate);
+            const updateResult: UpdateResult = await this.repository.update(id, productBottomToUpdate);
             if (updateResult.affected === 1) {
                 const updatedProductBottom: ProductBottom = await this.findOneProductBottomById(id);
                 return updatedProductBottom;
