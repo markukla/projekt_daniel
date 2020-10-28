@@ -16,6 +16,7 @@ import ProductService from "./productRepositoryService";
 import OrderVersionRegister from "../Models/OrderVersionRegister/orderVersionRegister.entity";
 import OrderDetails from "../Models/OrderDetail/orderDetails.entity";
 import OrderNotFoundException from "../Exceptions/OrderNotFoundException";
+import User from "../Models/Users/user.entity";
 
 
 class OrderService implements RepositoryService {
@@ -74,7 +75,7 @@ class OrderService implements RepositoryService {
       return foundRegister
     }
     public async findAllOrdersVersionsRegisters():Promise<OrderVersionRegister[]>{
-        const ordersRegisters=await this.manager.find(OrderVersionRegister,{relations:["orders"]});
+        const ordersRegisters=await this.manager.find(OrderVersionRegister,{relations:["ordersInthisRegister"]});
         return ordersRegisters;
     }
     public async findAllCurentVerionsOfOrder():Promise<Order[]>{
@@ -82,12 +83,38 @@ class OrderService implements RepositoryService {
         let currentOrders:Order[]=[];
 
             ordersRegisters.forEach(rg=>{
-               currentOrders.push(rg.orders[rg.orders.length-1]);
+               currentOrders.push(rg.ordersInthisRegister[rg.ordersInthisRegister.length-1]);
 
         });
             return currentOrders;
 
     }
+    public async findAllCurentVerionsOfOrderForGivenPartnerCode(partnerCode:string):Promise<Order[]>{
+        let allCurentOrders:Order[]=await this.findAllCurentVerionsOfOrder();// it would be good to query only orders for this business partner instead
+
+      let ordersForBusinessPartnerWithThisCode:Order[]=allCurentOrders.filter(o=>
+          o.businessPartner.code===partnerCode);
+
+
+
+
+        return ordersForBusinessPartnerWithThisCode;
+
+    }
+    public async findAllCurentVerionsOfOrderForGivenPartnerId(partnerId:string):Promise<Order[]>{
+        let allCurentOrders:Order[]=await this.findAllCurentVerionsOfOrder();
+
+        let ordersForBusinessPartnerWithThisId:Order[]=allCurentOrders.filter(o=>
+            o.businessPartner.id===Number(partnerId));
+
+
+
+
+        return ordersForBusinessPartnerWithThisId;
+
+    }
+
+
 
     public async deleteOrderVersionRegisterById(currentOrderId:string){
        const currentOrder=await this.repository.findOne(currentOrderId,{relations:["orderVersionRegister"]});
@@ -97,7 +124,7 @@ class OrderService implements RepositoryService {
        const orderRegisterToDeleteId=currentOrder.orderVersionRegister.id;
        // other query is required to obtain orders in this OrderRegister, it cannot be done by currentOrder.orderVersionRegister.orders due to eager limitations
        const orderRegisterToDeleteObtainedWithDiffrentQuery=await this.manager.findOne(OrderVersionRegister,orderRegisterToDeleteId,{relations:["orders"]})
-       const ordersOfOrderRegsterTODelete=orderRegisterToDeleteObtainedWithDiffrentQuery.orders;
+       const ordersOfOrderRegsterTODelete=orderRegisterToDeleteObtainedWithDiffrentQuery.ordersInthisRegister;
 
 /*
 cascade removal of orderDetails does not work,

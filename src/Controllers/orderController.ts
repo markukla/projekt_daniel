@@ -28,10 +28,10 @@ const path = require('path');
 
 
 
-class OrderController implements Controller{
+class OrderController implements Controller {
     public path = '/orders';
     public router = express.Router();
-    public  service:OrderService=new OrderService();
+    public service: OrderService = new OrderService();
 
 
     constructor() {
@@ -39,19 +39,16 @@ class OrderController implements Controller{
     }
 
 
-
     private initializeRoutes() {
-        this.router.get(this.path,this.getAllOrders);
-        this.router.get(`${this.path}/currents`,this.getAllCurentVersionOfOrders);
+        this.router.get(this.path, this.getAllOrders);
+        this.router.get(`${this.path}/currents`, this.getAllCurentVersionOfOrders);
         this.router.post(this.path, validationMiddleware(CreateOrderDto), this.addNewOrder)
-        this.router.post(`${this.path}/currents/:id/newVersion`,this.addNewVersionOfOrder);
-        this.router.delete(`${this.path}/currents/:id`,this.removeCurrentOrderAndVersionRegister);
+        this.router.post(`${this.path}/currents/:id/newVersion`, this.addNewVersionOfOrder);
+        this.router.delete(`${this.path}/currents/:id`, this.removeCurrentOrderAndVersionRegister);
+        this.router.get(`${this.path}/currents/:partnerCode`, this.findAllCurentVerionsOfOrderForGivenPartnerCode);
 
         this.router.get(`${this.path}/:id`, this.getOneOrderById);
         //remeber to add authentication admin authorization middleware after tests
-
-
-
 
 
     }
@@ -63,11 +60,11 @@ class OrderController implements Controller{
 
 
         try {
-            const order:Order = await this.service.addNewOrder(orderData); // it is probably wrong path
+            const order: Order = await this.service.addNewOrder(orderData); // it is probably wrong path
 
             res.send({
-                message:"new Order added:",
-                order:order
+                message: "new Order added:",
+                order: order
             });
         } catch (error) {
             console.log(`${error.message}`)
@@ -79,13 +76,12 @@ class OrderController implements Controller{
         const orderData: CreateOrderDto = req.body;
 
 
-
         try {
-            const order:Order = await this.service.addNewVersionOfOrder(orderData,req.params.id); // it is probably wrong path
+            const order: Order = await this.service.addNewVersionOfOrder(orderData, req.params.id); // it is probably wrong path
 
             res.send({
-                message:"new order version added:",
-                order:order
+                message: "new order version added:",
+                order: order
             });
         } catch (error) {
             next(error);
@@ -93,91 +89,94 @@ class OrderController implements Controller{
     }
 
 
-
-
-    private getAllOrders = async (request: express.Request, response: express.Response, next: express.NextFunction)=>
-    {
-        try{
-            const orders:Order[]=await this.service.findAllOrders();
+    private getAllOrders = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        try {
+            const orders: Order[] = await this.service.findAllOrders();
 
 
             response.send(orders);
 
 
-        }
-        catch (error) {
+        } catch (error) {
             next(error);
         }
 
 
     }
 
-    private getOneOrderById = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
-        const id:string=request.params.id;
-        try{
-            const foundOrder:Order=await this.service.findOneOrderById(id);
+    private getOneOrderById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        const id: string = request.params.id;
+        try {
+            const foundOrder: Order = await this.service.findOneOrderById(id);
 
-        }
-        catch (error) {
+        } catch (error) {
             next(error);
         }
-
 
 
     }
 
 
-    private getAllCurentVersionOfOrders = async (request: express.Request, response: express.Response, next: express.NextFunction)=>
-    {
-        try{
-            const orders:Order[]=await this.service.findAllCurentVerionsOfOrder();
+    private getAllCurentVersionOfOrders = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        try {
+            const orders: Order[] = await this.service.findAllCurentVerionsOfOrder();
 
 
             response.send(orders);
 
 
-        }
-        catch (error) {
+        } catch (error) {
             next(error);
         }
 
 
     }
-    private removeCurrentOrderAndVersionRegister = async (request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    private removeCurrentOrderAndVersionRegister = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
-        try{
-            const curerntOrderid:string=request.params.id;
-            const currentOrder=await this.service.findOneOrderById(curerntOrderid);
+        try {
+            const curerntOrderid: string = request.params.id;
+            const currentOrder = await this.service.findOneOrderById(curerntOrderid);
 
-            const versionRegisterId=String(currentOrder.orderVersionRegister.id);
-            const deletedOrderRegister:OrderVersionRegister=await this.service.deleteOrderVersionRegisterById(versionRegisterId);
-            if(deletedOrderRegister){
+            const versionRegisterId = String(currentOrder.orderVersionRegister.id);
+            const deletedOrderRegister: OrderVersionRegister = await this.service.deleteOrderVersionRegisterById(versionRegisterId);
+            if (deletedOrderRegister) {
                 response.send({
-                    status:200,
-                    message:'order and its version history removed'
+                    status: 200,
+                    message: 'order and its version history removed'
+                });
+            } else {
+                response.send({
+                    status: 500,
+                    message: 'Ops something went wrong, could not remove order'
                 });
             }
-            else {
-                response.send({
-                    status:500,
-                    message:'Ops something went wrong, could not remove order'
-                });
-            }
-        }
-        catch (error) {
+        } catch (error) {
             next(error);
         }
-
 
 
     }
 
 
+    private findAllCurentVerionsOfOrderForGivenPartnerCode = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+try{
+        const partnerCode:string=request.params.partnerCode;
+        console.log(`${partnerCode}`);
 
+        const ordersforOnePartner:Order[]=await this.service.findAllCurentVerionsOfOrderForGivenPartnerCode(partnerCode);
+
+
+        response.send(ordersforOnePartner);
+
+
+    }
+    catch (error) {
+    next(error);
+    }
+
+    }
 
 }
-
-
 
 
 export default OrderController;

@@ -15,7 +15,7 @@ class Order {
     @Column()
     orderVersionNumber:string;
     @Column()
-    orderTotalNumber:String // orderNumber and version number with some separator
+    orderTotalNumber:string; // orderNumber and version number with some separator
     @Column()
     index:string;
 
@@ -42,7 +42,7 @@ class Order {
     @ManyToOne(() => User, (creator: User) => creator.ordersCreatedByThisUser, {eager: true})
     creator: User
 
-@ManyToOne(()=>OrderVersionRegister,(orderVersionRegister:OrderVersionRegister)=>orderVersionRegister.orders,{eager: true,cascade:true})
+@ManyToOne(()=>OrderVersionRegister,(orderVersionRegister:OrderVersionRegister)=>orderVersionRegister.ordersInthisRegister,{eager: true,cascade:true})
     orderVersionRegister:OrderVersionRegister;
 
 

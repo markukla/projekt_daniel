@@ -3,6 +3,8 @@ import Order from "../Order/order.entity";
 import ProductType from "./productType.entity";
 import ProductBottom from "./productBottom.entity";
 import ProductTop from "./productTop.entity";
+import Dimension from "../OrderDetail/dimension";
+import DimensionTextFIeldInfo from "./dimensionTextFIeldInfo";
 
 @Entity("products")
 class Product{  // this class represents type of product and technical drawing of product
@@ -10,13 +12,13 @@ class Product{  // this class represents type of product and technical drawing o
     @PrimaryGeneratedColumn()
     public id?: number;
 
-   @ManyToOne(()=>ProductType,(productType:ProductType)=>productType.productsWithThisType,{eager:true,cascade:true})
+   @ManyToOne(()=>ProductType,(productType:ProductType)=>productType.productsWithThisType) //eager cause strange error table name (long alias name) is spacyfied more than once
    productType:ProductType;
 
-    @ManyToOne(()=>ProductBottom,(productBottom:ProductBottom)=>productBottom.productsWithThisBottomType,{eager:true,cascade:true})
+    @ManyToOne(()=>ProductBottom,(productBottom:ProductBottom)=>productBottom.productsWithThisBottomType,{eager:true})
     productBottom:ProductBottom;
 
-    @ManyToOne(()=>ProductBottom,(productBottom:ProductBottom)=>productBottom.productsWithThisBottomType,{eager:true,cascade:true})
+    @ManyToOne(()=>ProductBottom,(productBottom:ProductBottom)=>productBottom.productsWithThisBottomType,{eager:true})
     productTop:ProductTop;
 
     @Column()
@@ -28,7 +30,10 @@ class Product{  // this class represents type of product and technical drawing o
 
     @Column()
     urlOfThumbnailDrawing:string; // smaller drawing obtained by library
-  // it is a html view which consits of orginal drawing and table with html form to be filled by the user (information table below the drawing)
+
+    @Column({type:"jsonb"})
+    dimensionsTextFieldInfo:DimensionTextFIeldInfo[];
+
 
 
 }

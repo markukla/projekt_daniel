@@ -1,8 +1,9 @@
-import {IsObject, IsString, Length} from "class-validator";
+import {IsArray, IsObject, IsString, Length} from "class-validator";
 import {Column} from "typeorm";
 import ProductType from "./productType.entity";
 import ProductTop from "./productTop.entity";
 import ProductBottom from "./productBottom.entity";
+import DimensionTextFIeldInfo from "./dimensionTextFIeldInfo";
 
 //this class represents fields filled by the user, oter fields like url addresses will be obtained in other way
 class CreateProductDto{
@@ -18,8 +19,10 @@ class CreateProductDto{
     @IsObject()
     productBottom:ProductBottom;
 
-    @IsObject()
+    @IsString()
     dimensionsCodes:string;
+    @IsArray()
+    dimensionsTextFieldInfo:DimensionTextFIeldInfo[];
 
 
 

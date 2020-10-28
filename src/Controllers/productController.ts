@@ -49,9 +49,9 @@ class ProductController implements Controller{
         this.router.get(this.path, authMiddleware,adminAuthorizationMiddleware,this.getAllProducts);
 
         this.router.get(`${this.path}/:id`, this.getOneProductById);
-        this.router.post(`${this.path}/:id`,this.upload.single("file"), validationMiddleware(CreateProductDto, true), this.updateProductById);//remeber to add authentication admin authorization middleware after tests
+        this.router.post(`${this.path}/:id`,this.upload.single("file"), this.updateProductById);//remeber to add authentication admin authorization middleware after tests
         this.router.delete(`${this.path}/:id`,authMiddleware,adminAuthorizationMiddleware, this.deleteOneProductById);
-        this.router.post(this.path,this.upload.single("file"),validationMiddleware(CreateProductDto), this.addOneProduct);//remeber to add authentication admin authorization middleware after tests
+        this.router.post(this.path,/*this.upload.single("file")-turn of for a while */ this.addOneProduct);//remeber to add authentication admin authorization middleware after tests
         this.router.get(`/addProduct`, this.getAddProductFormView);
         this.router.get(`/updateProduct/:id`, this.getUpdateProductFormView);
 
@@ -59,8 +59,11 @@ class ProductController implements Controller{
     }
 
     private addOneProduct = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-       const targetPath=this.uploadedDrawingToserwerAndGetPath(req,res,next);
-        const productData: CreateProductDto = req.body;
+       const targetPath="some fake path"//this.uploadedDrawingToserwerAndGetPath(req,res,next);
+
+        const productData=req.body;
+
+
         console.log(productData);
 
         try {
