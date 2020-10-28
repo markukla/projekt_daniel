@@ -17,11 +17,11 @@ class ProductType {
     @OneToMany(()=>Product,(product:Product)=>product.productType)
     productsWithThisType?:Product[];
 
-    @ManyToMany(()=>ProductTop,{eager:true})
+    @ManyToMany(()=>ProductTop,)
     @JoinTable({name:"productType_productTop_id_pairs"})
     productTopsAvailableToThisProductType:ProductTop[];
 
-    @ManyToMany(()=>ProductBottom, {eager:true})
+    @ManyToMany(()=>ProductBottom, )
     @JoinTable({name:"productType_productBottom_id_pairs"})
     productBottomsAvailableToThisProductType:ProductBottom[];
 

@@ -15,7 +15,7 @@ class ProductTypeService implements RepositoryService {
     public repository = getRepository(ProductType);
 
     public async findOneProductTypeById(id: string): Promise<ProductType> {
-        const foundProductType: ProductType = await this.repository.findOne(id); // table name not entity name
+        const foundProductType: ProductType = await this.repository.findOne(id,{relations:["productTopsAvailableToThisProductType","productBottomsAvailableToThisProductType"]}); // table name not entity name
         if (!foundProductType) {
             throw new ProductTypeNotFoundException(id);
         }
@@ -27,7 +27,7 @@ class ProductTypeService implements RepositoryService {
     public async findOneProductTypeByProductTypeCode(createProductTypeDto: CreateProductTypeDto): Promise<ProductType> {
         const foundProduct: ProductType = await this.repository.findOne({
             productTypeCode: createProductTypeDto.productTypeCode
-        });
+        },{relations:["productTopsAvailableToThisProductType","productBottomsAvailableToThisProductType"]});
 
         return foundProduct;
 
@@ -35,9 +35,7 @@ class ProductTypeService implements RepositoryService {
     }
 
     public async findOneProductTypeByProductTypeName(createProductTypeDto: CreateProductTypeDto): Promise<ProductType> {
-        const foundProduct: ProductType = await this.repository.findOne({
-            productTypeName: createProductTypeDto.productTypeName
-        });
+        const foundProduct: ProductType = await this.repository.findOne({productTypeName: createProductTypeDto.productTypeName},{relations:["productTopsAvailableToThisProductType","productBottomsAvailableToThisProductType"]});
 
         return foundProduct;
 
@@ -46,7 +44,7 @@ class ProductTypeService implements RepositoryService {
 
 
     public async findAllProductsTypes(): Promise<ProductType[]> {
-        const foundProductTypes: ProductType[] = await this.repository.find();
+        const foundProductTypes: ProductType[] = await this.repository.find({relations:["productTopsAvailableToThisProductType","productBottomsAvailableToThisProductType"]});
 
         return foundProductTypes;
 

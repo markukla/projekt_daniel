@@ -108,6 +108,7 @@ class OrderController implements Controller {
         const id: string = request.params.id;
         try {
             const foundOrder: Order = await this.service.findOneOrderById(id);
+            response.send(foundOrder);
 
         } catch (error) {
             next(error);
