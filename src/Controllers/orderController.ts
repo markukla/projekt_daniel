@@ -46,6 +46,7 @@ class OrderController implements Controller {
         this.router.post(`${this.path}/currents/:id/newVersion`, this.addNewVersionOfOrder);
         this.router.delete(`${this.path}/currents/:id`, this.removeCurrentOrderAndVersionRegister);
         this.router.get(`${this.path}/currents/:partnerCode`, this.findAllCurentVerionsOfOrderForGivenPartnerCode);
+        this.router.get(`${this.path}/currents/partner/:id`, this.findAllCurentVerionsOfOrderForGivenPartneId);
 
         this.router.get(`${this.path}/:id`, this.getOneOrderById);
         //remeber to add authentication admin authorization middleware after tests
@@ -177,7 +178,25 @@ try{
 
     }
 
-}
 
+    private findAllCurentVerionsOfOrderForGivenPartneId = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        try{
+            const id:string=request.params.id;
+
+
+            const ordersforOnePartner:Order[]=await this.service.findAllCurentVerionsOfOrderForGivenPartnerId(id);
+
+
+            response.send(ordersforOnePartner);
+
+
+        }
+        catch (error) {
+            next(error);
+        }
+
+    }
+
+}
 
 export default OrderController;

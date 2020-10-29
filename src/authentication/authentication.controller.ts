@@ -12,11 +12,14 @@ import ChangePasswordDto from "./changePassword.dto";
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import authMiddleware from "../middleware/auth.middleware";
 import LoggedUser from "./loggedUser";
+import {getManager} from "typeorm";
+import BlackListedToken from "../Models/BlackListedTokenEntity/blackListedToken.entity";
 
 class AuthenticationController implements Controller {
   public path = '/auth';
   public router = express.Router();
  public service = new AuthenticationService();
+ public manager=getManager();
 
   constructor() {
     this.initializeRoutes();
@@ -25,7 +28,7 @@ class AuthenticationController implements Controller {
   private initializeRoutes() {
     this.router.post(`${this.path}/login`, validationMiddleware(LogInDto), this.loggingIn);
       this.router.patch(`${this.path}/changePassword`, authMiddleware,validationMiddleware(ChangePasswordDto), this.changePaswordByLoggedUser);//optional allows users to change their password if are logged in
-
+      this.router.post(`${this.path}/logout`, this.loggingOut)
   }
 
   private loggingIn = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -63,6 +66,17 @@ class AuthenticationController implements Controller {
             next(error);
 
         }
+    }
+
+    private loggingOut = async (request: express.Request, response: express.Response) => {
+      const tokenToSaveAsBlackListed:string=request.cookies.Authorization;
+      console.log(`${tokenToSaveAsBlackListed}`);
+      const blackListedToken=await this.manager.save(BlackListedToken,new BlackListedToken(tokenToSaveAsBlackListed));
+        response.setHeader('Set-Cookie', ['Authorization=;Max-age=0']);
+        response.send({
+            status:200,
+            message:"you are logged out"
+        });
     }
 
 

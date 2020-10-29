@@ -8,6 +8,7 @@ import DataStoredInToken from '../interfaces/dataStoredInToken';
 import User from "../Models/Users/user.entity";
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import NotActiveException from "../Exceptions/NotActiveException";
+import BlackListedToken from "../Models/BlackListedTokenEntity/blackListedToken.entity";
 
 
 async function authMiddleware(request: RequestWithUser, response: Response, next: NextFunction) {
@@ -17,7 +18,17 @@ async function authMiddleware(request: RequestWithUser, response: Response, next
 
     if (cookies && cookies.Authorization) {
         const secret = process.env.JWT_SECRET;
+
+
         try {
+            const blackListedToken = await manager.findOne(BlackListedToken, {
+                blacklistedToken: cookies.Authorization
+            });
+            console.log(`blacklisted token= ${blackListedToken}`);
+            if (blackListedToken!==undefined) {
+                console.log("blacklisted token if executed");
+                next(new WrongAuthenticationTokenException());
+            }
             const verificationResponse = jwt.verify(cookies.Authorization, secret) as DataStoredInToken;
             console.log(verificationResponse);
 
@@ -25,23 +36,20 @@ async function authMiddleware(request: RequestWithUser, response: Response, next
             console.log(user);
 
 
-
             if (user) {
                 var userActive: boolean = user.active;
                 if (userActive) {
                     request.user = user;
-                    console.log(request.user);
+
                     next();
-                }
-                else {
+                } else {
                     next(new NotActiveException());
                 }
-            }
-             else {
+            } else {
                 next(new WrongAuthenticationTokenException());
             }
         } catch (error) {
-            next(new WrongAuthenticationTokenException());
+            next(error);
         }
     } else {
         next(new AuthenticationTokenMissingException());

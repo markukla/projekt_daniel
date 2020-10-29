@@ -101,7 +101,7 @@ class UserService implements RepositoryService {
     public getAllPrivilegedUsers = async (): Promise<User[]> => {
         // in relation option: it takes table name as paramter, not enity name
 
-        const allUsers: User[] = await this.manager.find(User, {relations: ['roles',"ordersWhichPointThisUserAsBusinessPartner","ordersCreatedByThisUser"]});
+        const allUsers: User[] = await this.manager.find(User, {relations: ['roles']});
 
         const adminOrEditors: User[] = [];
 
@@ -119,7 +119,7 @@ class UserService implements RepositoryService {
     public findOnePrivilegedUserById = async (id: string): Promise<User> => {
 
 
-        const foundUser: User = await this.manager.findOne(User, id, {relations: ["roles","ordersWhichPointThisUserAsBusinessPartner","ordersCreatedByThisUser"]});// relations it is not a table name, but field name, cause there could be many relations betwean 2 tables
+        const foundUser: User = await this.manager.findOne(User, id, {relations: ["roles"]});// relations it is not a table name, but field name, cause there could be many relations betwean 2 tables
         if (!foundUser) {
             throw new UserNotFoundException(String(id));
         } else if (foundUser) {
@@ -242,7 +242,7 @@ class UserService implements RepositoryService {
     public getAllBusinessPartners = async (): Promise<User[]> => {
         // in relation option: it takes table name as paramter, not enity name
 
-        const allUsers: User[] = await this.manager.find(User, {relations: ['roles',"ordersWhichPointThisUserAsBusinessPartner","ordersCreatedByThisUser"]});
+        const allUsers: User[] = await this.manager.find(User, {relations: ['roles']});
         const businesPartners: User[] = [];
 
         allUsers.forEach(user => {
@@ -257,7 +257,7 @@ class UserService implements RepositoryService {
     public findOnePartnerById = async (id: string): Promise<User> => {
 
 
-        const foundUser: User = await this.manager.findOne(User, id, {relations: ['roles',"ordersWhichPointThisUserAsBusinessPartner","ordersCreatedByThisUser"]});
+        const foundUser: User = await this.manager.findOne(User, id, {relations: ['roles']});
         if (!foundUser) {
             throw new BusinessPartnerNotFoundException(String(id));
         }
